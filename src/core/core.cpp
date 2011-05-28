@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	
 	cfw_component* component = create_cfw_component();	
 	
-	std::cout << "id: " << component->id().first << "~" << component->id().second << std::endl;
+	std::cout << "id: " << component->component_id().first << "~" << component->component_id().second << std::endl;
 	component->start();
 	component->stop();
 
