@@ -12,6 +12,7 @@ struct cfw_matrix {
 
 struct cfw_pgm_reader : public cfw_interface {
 	virtual cfw_matrix* read(const std::string& path) = 0; 
+	virtual void free(cfw_matrix* matrix) = 0;
 	virtual ~cfw_pgm_reader(){};
 };
 
