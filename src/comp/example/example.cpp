@@ -10,7 +10,6 @@ class example : public cfw_component
 {
 public:
 	example(){
-		_dep_array.push_back(cfw_surf_id);
 		_dep_array.push_back(cfw_pgm_reader_id);
 	}
 	~example(){}

@@ -1,12 +1,13 @@
 
 #include <cfw_core.hpp>
+#include <cfw_util.hpp>
 
 #include <iostream>
 #include <dlfcn.h>
 
 int main(int argc, char* argv[]) 
 {
-	void* handle = dlopen("./libexample.so", RTLD_LAZY);
+	void* handle = dlopen("./libpgm_reader.so", RTLD_LAZY);
     
     if (!handle) {
         std::cerr << "Cannot open library: " << dlerror() << std::endl;
@@ -27,6 +28,10 @@ int main(int argc, char* argv[])
 	component->start();
 	component->stop();
 
+	std::vector<cfw_interface*> if_array = component->if_array();
+	cfw_pgm_reader* reader = static_cast<cfw_pgm_reader*>(if_array[0]);
+	cfw_matrix* matrix = reader->read("test_image.pgm");
+	reader->free(matrix);
 		
 	typedef void (*destroy_cfw_component_t)(cfw_component*);
 	destroy_cfw_component_t destroy_cfw_component = (destroy_cfw_component_t) dlsym(handle, "destroy_cfw_component");

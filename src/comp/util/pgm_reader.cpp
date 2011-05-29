@@ -24,10 +24,19 @@ private:
     std::vector<char> _data;
 };
 
-class pgm_reader_if : cfw_pgm_reader
+class pgm_reader_if : public cfw_pgm_reader
 {
+public:
     pgm_reader_if() {};
     ~pgm_reader_if() {};
+	
+	cfw_id interface_id() const {
+		return cfw_pgm_reader_id;
+	}	
+	cfw_id component_id() const {
+		return std::make_pair("default_pgm_reader", "1");
+	}
+
     cfw_matrix* read(const std::string& path) {
 
         std::ifstream f(path.c_str(), std::ios_base::in|std::ios_base::binary);
@@ -88,10 +97,12 @@ class pgm_reader_if : cfw_pgm_reader
 class pgm_reader : public cfw_component
 {
 public:
-    pgm_reader() {}
+    pgm_reader() {
+		_if_array.push_back(&_reader);
+	}
     ~pgm_reader() {}
     cfw_id component_id() const {
-        return std::make_pair("pgm_reader", "1");
+        return std::make_pair("default_pgm_reader", "1");
     }
     void start() {}
     void stop() {}
@@ -108,8 +119,10 @@ public:
         delete static_cast<pgm_reader*>(component);
     }
 private:
+	pgm_reader_if _reader;
     std::vector<cfw_interface*> _if_array;
     std::vector<cfw_id> _dep_array;
+	
 };
 
 extern "C" cfw_component* create_cfw_component() {
