@@ -23,8 +23,6 @@ struct cfw_component {
 };
 
 struct cfw_portal {
-	virtual cfw_interface* interface(const cfw_id& interface_id, 
-		const cfw_id& component_id) const = 0;
 	virtual std::vector<cfw_interface*> interface(const cfw_id& id) = 0;
 	virtual ~cfw_portal(){};
 };

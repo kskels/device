@@ -1,3 +1,5 @@
+#ifndef CFW_SURF_HPP
+#define CFW_SURF_HPP
 
 #include <cfw_core.hpp>
 
@@ -7,4 +9,6 @@ struct cfw_surf : public cfw_interface {
 	virtual std::vector<float> extract() const = 0; 
 	virtual ~cfw_surf(){}; 
 };
+
+#endif // !CFW_SURF_HPP
 
