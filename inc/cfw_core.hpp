@@ -15,7 +15,7 @@ struct cfw_service {
 
 struct cfw_component {
 	virtual cfw_id id() const = 0;
-	virtual std::vector<cfw_service*> ifs() const = 0;
+	virtual std::vector<cfw_service*> services() const = 0;
 	virtual std::vector<cfw_id> deps() const = 0;
 	virtual void start() = 0;
 	virtual void stop() = 0;

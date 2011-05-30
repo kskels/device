@@ -2,11 +2,16 @@
 #include <cfw_core.hpp>
 #include <cfw_util.hpp>
 
+#include <portal.hpp>
+
 #include <iostream>
 #include <dlfcn.h>
 
+
 int main(int argc, char* argv[]) 
 {
+	portal _portal; // this should be a class variable
+
 	void* handle = dlopen("./libpgm_reader.so", RTLD_LAZY);
     
     if (!handle) {
@@ -14,7 +19,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-	typedef cfw_component* (*create_cfw_component_t)();
+	typedef cfw_component* (*create_cfw_component_t)(const cfw_portal& portal);
 	create_cfw_component_t create_cfw_component = (create_cfw_component_t) dlsym(handle, "create_cfw_component");
 	if (!create_cfw_component) {
 		std::cerr << "Cannot load symbol 'create_cfw_component': " << dlerror() << std::endl;
@@ -22,13 +27,14 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	
-	cfw_component* component = create_cfw_component();	
+	cfw_component* component = create_cfw_component(_portal);	
+	_portal.register_component(component);
 	
-	std::cout << "id: " << component->component_id().first << "~" << component->component_id().second << std::endl;
+	std::cout << "id: " << component->id().first << "~" << component->id().second << std::endl;
 	component->start();
 	component->stop();
 
-	std::vector<cfw_interface*> if_array = component->if_array();
+	std::vector<cfw_service*> if_array = component->services();
 	cfw_pgm_reader* reader = static_cast<cfw_pgm_reader*>(if_array[0]);
 	cfw_matrix* matrix = reader->read("test_image.pgm");
 	reader->free(matrix);
