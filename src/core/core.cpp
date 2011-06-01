@@ -10,44 +10,37 @@
 
 int main(int argc, char* argv[]) 
 {
-	portal _portal; // this should be a class variable
+	portal p;
 
-	void* handle = dlopen("./libpgm_reader.so", RTLD_LAZY);
+	void* handle = dlopen("./libexample.so", RTLD_LAZY);
     
     if (!handle) {
         std::cerr << "Cannot open library: " << dlerror() << std::endl;
         return 1;
     }
 
-	typedef cfw_component* (*create_cfw_component_t)(const cfw_portal& portal);
-	create_cfw_component_t create_cfw_component = (create_cfw_component_t) dlsym(handle, "create_cfw_component");
-	if (!create_cfw_component) {
+	cfw_create_component_t create_component = (cfw_create_component_t) dlsym(handle, "cfw_create_component");
+	if (!create_component) {
 		std::cerr << "Cannot load symbol 'create_cfw_component': " << dlerror() << std::endl;
 		dlclose(handle);
 		return 1;
 	}
 	
-	cfw_component* component = create_cfw_component(_portal);	
-	_portal.register_component(component);
+	cfw_component* component = create_component(&p, "");	
+	p.register_component(component);
 	
 	std::cout << "id: " << component->id().first << "~" << component->id().second << std::endl;
 	component->start();
 	component->stop();
 
-	std::vector<cfw_service*> if_array = component->services();
-	cfw_pgm_reader* reader = static_cast<cfw_pgm_reader*>(if_array[0]);
-	cfw_matrix* matrix = reader->read("test_image.pgm");
-	reader->free(matrix);
-		
-	typedef void (*destroy_cfw_component_t)(cfw_component*);
-	destroy_cfw_component_t destroy_cfw_component = (destroy_cfw_component_t) dlsym(handle, "destroy_cfw_component");
-	if (!destroy_cfw_component) {
+	cfw_destroy_component_t destroy_component = (cfw_destroy_component_t) dlsym(handle, "cfw_destroy_component");
+	if (!destroy_component) {
 		std::cerr << "Cannot load symbol 'destroy_component': " << dlerror() << std::endl;
 		dlclose(handle);
 		return 1;
 	}
 
-	destroy_cfw_component(component);
+	destroy_component(component);
 
 	return 0;
 } // main

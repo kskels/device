@@ -1,3 +1,4 @@
+
 #ifndef CFW_CORE_HPP
 #define CFW_CORE_HPP
 
@@ -8,24 +9,29 @@
 typedef std::pair<std::string,std::string> cfw_id;
 
 struct cfw_service {
-	virtual cfw_id sid() const = 0;
-	virtual cfw_id cid() const = 0; 
-	virtual ~cfw_service(){};
+    virtual cfw_id sid() const = 0;
+    virtual cfw_id cid() const = 0;
+    virtual ~cfw_service() {};
 };
 
 struct cfw_component {
-	virtual cfw_id id() const = 0;
-	virtual std::vector<cfw_service*> services() const = 0;
-	virtual std::vector<cfw_id> deps() const = 0;
-	virtual void start() = 0;
-	virtual void stop() = 0;
-	virtual ~cfw_component(){};
+    virtual cfw_id id() const = 0;
+    virtual std::vector<cfw_service*> services() const = 0;
+    virtual std::vector<std::pair<cfw_id,bool> > deps() const = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+    virtual ~cfw_component() {};
 };
 
 struct cfw_portal {
-	virtual std::vector<cfw_service*> services(const cfw_id& id) const = 0;
-	virtual ~cfw_portal(){};
+    virtual std::vector<cfw_service*> services(const cfw_id& id) const = 0;
+    virtual ~cfw_portal() {};
 };
+
+typedef cfw_component* (*cfw_create_component_t)(cfw_portal* portal,
+        const std::string& cfg);
+
+typedef void (*cfw_destroy_component_t)(cfw_component* component);
 
 #endif // !CFW_CORE_HPP
 

@@ -1,15 +1,18 @@
 
 include_directories(
+	/opt/gtest/gtest-1.5.0/include
 	${PROJECT_ROOT_DIR}/inc
 	${PROJECT_ROOT_DIR}/src/core
 )
 
-add_executable(device
+add_executable(cfw
 	portal.cpp
 	core.cpp
 )
 
-target_link_libraries(device
+target_link_libraries(cfw
 	dl
 )
+
+add_subdirectory(unittest)
 
