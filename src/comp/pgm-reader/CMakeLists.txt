@@ -8,8 +8,3 @@ add_library(pgm-reader SHARED EXCLUDE_FROM_ALL
 	pgm_reader.cpp
 )
 
-add_executable(pgm-reader-unittesat EXCLUDE_FROM_ALL
-    pgm_reader.cpp
-    pgm_reader_unittest.cpp
-)
-

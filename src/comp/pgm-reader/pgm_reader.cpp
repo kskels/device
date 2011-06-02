@@ -79,7 +79,7 @@ public:
         std::vector<char> data;
         // Read the image, line by line
         char cc;
-        for (int i=0; i<height; ++i) {
+        for (int i=0; i<(height*width); ++i) {
             f.read(&cc, 1);
             if (f.fail()) {
                 throw "Unexpected EOF";
@@ -109,9 +109,7 @@ public:
     cfw_id id() const {
         return std::make_pair("pascal_pgm_reader", "1");
     }
-    void start() {
-		std::cout << _portal->services(cfw_pgm_reader_id).size() << std::endl;
-	}
+    void start() {}
     void stop() {}
     std::vector<cfw_service*> services() const {
         return _services;
@@ -127,12 +125,12 @@ private:
 	pgm_reader_if _reader;
 };
 
-extern "C" cfw_component* create_cfw_component(cfw_portal* portal, 
+extern "C" cfw_component* cfw_create_component(cfw_portal* portal, 
         const std::string& cfg) {
     return new pgm_reader(portal, cfg);
 }
 
-extern "C" void destroy_cfw_component(cfw_component* component) {
+extern "C" void cfw_destroy_component(cfw_component* component) {
     delete static_cast<pgm_reader*>(component);
 }
 

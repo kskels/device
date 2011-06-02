@@ -10,7 +10,7 @@
 
 class surf_service : public cfw_surf {
 public:
-    surf_service(){};
+    surf_service() : _surf(cv::SURF(100, 4, 2, true)) {};
     ~surf_service(){};
 
     cfw_id sid() const {
@@ -20,12 +20,33 @@ public:
         return std::make_pair("opencv_surf", "1");
     }
 
-    std::vector<float> extract(cfw_matrix* image) const {
-        cv::Mat mat(image->height(), image->width(), image->data()[0]);
-        std::vector<float> descriptors;
-        std::vector<cv::KeyPoint> keypoints;
-        _surf(mat, mat, keypoints, descriptors);  
-        return descriptors;
+    std::vector<float> keypoints(cfw_matrix* image) const {
+        cv::Mat mat(image->height(), image->width(), 0);
+        std::vector<char> data = image->data();
+        for (int i(0); i != data.size(); ++i) {
+            mat.data[i] = data[i];
+        }
+        std::vector<cv::KeyPoint> k;
+        _surf(mat, mat, k); 
+        std::vector<float> kk;
+        for (std::vector<cv::KeyPoint>::iterator it = k.begin(); it != k.end(); ++it) {
+            kk.push_back((*it).pt.x);
+            kk.push_back((*it).pt.y);
+            kk.push_back((*it).size);
+        }
+        return kk;
+    } 
+
+    std::vector<float> descriptors(cfw_matrix* image) const {
+        cv::Mat mat(image->height(), image->width(), 0);
+        std::vector<char> data = image->data();
+        for (int i(0); i != data.size(); ++i) {
+            mat.data[i] = data[i];
+        }
+        std::vector<float> d;
+        std::vector<cv::KeyPoint> k;
+        _surf(mat, mat, k, d);  
+        return d;
     } 
 
 private:

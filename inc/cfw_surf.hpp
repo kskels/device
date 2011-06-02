@@ -25,7 +25,8 @@ struct cfw_pgm_reader : public cfw_service {
 const cfw_id cfw_surf_id = std::make_pair("cfw_surf", "1");
 
 struct cfw_surf : public cfw_service {
-    virtual std::vector<float> extract(cfw_matrix* image) const = 0;
+    virtual std::vector<float> keypoints(cfw_matrix* image) const = 0;
+    virtual std::vector<float> descriptors(cfw_matrix* image) const = 0;
     virtual ~cfw_surf() {};
 };
 
