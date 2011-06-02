@@ -14,5 +14,3 @@ target_link_libraries(cfw
 	dl
 )
 
-add_subdirectory(unittest)
-
