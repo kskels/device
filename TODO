@@ -19,7 +19,7 @@ SDK
 * maybe runnable super-class for active services
 * decide on used libraries (poco, boost, none?)
 
-Components Ideas
+Component Ideas
 -------------------------------------------------------------------------------
 * a message service between components 
 * enet NBI and maybe client
