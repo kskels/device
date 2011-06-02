@@ -1,0 +1,12 @@
+
+set(LAPACK_ROOT_DIR ${DEVICE_ROOT_DIR}/src/lapack)
+set(LAPACK_INCLUDE_DIR ${LAPACK_ROOT_DIR}/inc)
+set(LAPACK_SOURCE_DIR ${LAPACK_ROOT_DIR}/src)
+
+add_subdirectory(src)
+
+add_custom_target(clean-lapack
+	rm -rf ${LAPACK_ROOT_DIR}/inc/*.orig &&
+	rm -rf ${LAPACK_ROOT_DIR}/src/*.orig
+)
+

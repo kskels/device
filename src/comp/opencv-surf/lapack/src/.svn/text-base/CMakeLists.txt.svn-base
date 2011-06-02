@@ -1,0 +1,11 @@
+
+include_directories(
+		${LAPACK_INCLUDE_DIR}
+	)
+
+file(GLOB LAPACK_SOURCE_FILES "*.c")
+
+add_library(lapack EXCLUDE_FROM_ALL
+		${LAPACK_SOURCE_FILES}	
+	)
+
