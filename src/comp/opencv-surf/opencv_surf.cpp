@@ -1,11 +1,16 @@
 
 #include <cfw_core.hpp>
 #include <cfw_util.hpp>
+#include <>
 
 #include <cv.h>
 
 #include <iostream>
 
+
+class surf_service : public cfw_surf {
+
+};
 
 class opencv_surf : public cfw_component
 {
@@ -33,8 +38,6 @@ private:
     std::vector<std::pair<cfw_id,bool> > _deps;
     cfw_portal* _portal;
     std::string _cfg;
-    cv::SURF _surf; 
-    
 };
 
 extern "C" cfw_component* cfw_create_component(cfw_portal* portal,

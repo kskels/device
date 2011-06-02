@@ -1,17 +1,16 @@
 
 include_directories(
     ${PROJECT_ROOT_DIR}/inc   
-    ${PROJECT_ROOT_DIR}/src/comp/opencv-surf/surf/inc   
+    surf/inc   
+    lapack/inc
 )
 
-add_library(opencv-surf SHARED
+file(GLOB LAPACK_SOURCE_FILES "lapack/src/*.c")
+file(GLOB SURF_SOURCE_FILES "surf/src/*.cpp")
+
+add_library(opencv-surf SHARED EXCLUDE_FROM_ALL
+    ${LAPACK_SOURCE_FILES}
+    ${SURF_SOURCE_FILES}
     opencv_surf.cpp
 )
-
-target_link_libraries(opencv-surf
-    surf
-)
-    
-add_subdirectory(lapack)
-add_subdirectory(surf)
 
