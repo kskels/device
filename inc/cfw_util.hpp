@@ -20,7 +20,7 @@ struct cfw_ac : public cfw_service {
     // add more stuff when needed
     virtual void terminate() = 0;
     virtual ~cfw_ac() {};
-}
+};
 
 #endif //!CFW_UTIL_HPP
 
