@@ -1,0 +1,7 @@
+
+Software for an Embedded Device
+
+Small experimental project for testing SURF (Speed-Up Robust Features) method 
+for an embedded Linux device. Took a chance to start apply component based 
+design with some inspiration from SOA (Service Oriented Architecture) papers.
+
