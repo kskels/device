@@ -33,13 +33,13 @@ class pgm_reader_if : public cfw_pgm_reader
 public:
     pgm_reader_if() {};
     ~pgm_reader_if() {};
-	
-	cfw_id sid() const {
-		return cfw_pgm_reader_id;
-	}	
-	cfw_id cid() const {
-		return std::make_pair("pascal_pgm_reader", "1");
-	}
+
+    cfw_id sid() const {
+        return cfw_pgm_reader_id;
+    }
+    cfw_id cid() const {
+        return std::make_pair("pascal_pgm_reader", "1");
+    }
 
     cfw_matrix* read(const std::string& path) {
 
@@ -93,18 +93,18 @@ public:
         matrix* m = new matrix(width, height, data);
         return m;
     }
-	void free(cfw_matrix* data) {
-		delete static_cast<matrix*>(data);		
-	}
+    void free(cfw_matrix* data) {
+        delete static_cast<matrix*>(data);
+    }
 };
 
 class pgm_reader : public cfw_component
 {
 public:
-    pgm_reader(cfw_portal* portal, const std::string& cfg) : 
+    pgm_reader(cfw_portal* portal, const std::string& cfg) :
         _portal(portal), _cfg(cfg) {
-		_services.push_back(&_reader);
-	}
+        _services.push_back(&_reader);
+    }
     ~pgm_reader() {}
     cfw_id id() const {
         return std::make_pair("pascal_pgm_reader", "1");
@@ -122,15 +122,17 @@ private:
     std::vector<std::pair<cfw_id,bool> > _deps;
     cfw_portal* _portal;
     std::string _cfg;
-	pgm_reader_if _reader;
+    pgm_reader_if _reader;
 };
 
-extern "C" cfw_component* cfw_create_component(cfw_portal* portal, 
-        const std::string& cfg) {
+extern "C" cfw_component* cfw_create_component(cfw_portal* portal,
+        const std::string& cfg)
+{
     return new pgm_reader(portal, cfg);
 }
 
-extern "C" void cfw_destroy_component(cfw_component* component) {
+extern "C" void cfw_destroy_component(cfw_component* component)
+{
     delete static_cast<pgm_reader*>(component);
 }
 

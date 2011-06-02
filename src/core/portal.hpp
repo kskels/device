@@ -8,10 +8,10 @@
 class portal : public cfw_portal
 {
 public:
-	std::vector<cfw_service*> services(const cfw_id& id) const;
-	void register_component(cfw_component* component);
+    std::vector<cfw_service*> services(const cfw_id& id) const;
+    void register_component(cfw_component* component);
 private:
-	std::map<cfw_id,cfw_component*> _components;
+    std::map<cfw_id,cfw_component*> _components;
 };
 
 #endif // !CORE_PORTAL_HPP

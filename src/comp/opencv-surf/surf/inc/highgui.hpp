@@ -69,7 +69,7 @@ CV_EXPORTS void setTrackbarPos( const string& trackbarname, const string& winnam
 
 CV_EXPORTS Mat imread( const string& filename, int flags=1 );
 CV_EXPORTS bool imwrite( const string& filename, const Mat& img,
-              const vector<int>& params=vector<int>());
+                         const vector<int>& params=vector<int>());
 CV_EXPORTS Mat imdecode( const Mat& buf, int flags );
 CV_EXPORTS bool imencode( const string& ext, const Mat& img,
                           vector<uchar>& buf,
@@ -80,10 +80,14 @@ CV_EXPORTS int waitKey(int delay=0);
 #ifndef CV_NO_VIDEO_CAPTURE_CPP_API
 
 template<> inline void Ptr<CvCapture>::delete_obj()
-{ cvReleaseCapture(&obj); }
-    
+{
+    cvReleaseCapture(&obj);
+}
+
 template<> inline void Ptr<CvVideoWriter>::delete_obj()
-{ cvReleaseVideoWriter(&obj); }
+{
+    cvReleaseVideoWriter(&obj);
+}
 
 class CV_EXPORTS VideoCapture
 {
@@ -91,36 +95,36 @@ public:
     VideoCapture();
     VideoCapture(const string& filename);
     VideoCapture(int device);
-    
+
     virtual ~VideoCapture();
     virtual bool open(const string& filename);
     virtual bool open(int device);
     virtual bool isOpened() const;
     virtual void release();
-    
+
     virtual bool grab();
     virtual bool retrieve(Mat& image, int channel=0);
     virtual VideoCapture& operator >> (Mat& image);
-    
+
     virtual bool set(int propId, double value);
     virtual double get(int propId);
-    
+
 protected:
     Ptr<CvCapture> cap;
 };
 
-    
+
 class CV_EXPORTS VideoWriter
 {
-public:    
+public:
     VideoWriter();
     VideoWriter(const string& filename, int fourcc, double fps, Size frameSize, bool isColor=true);
-    
+
     virtual ~VideoWriter();
     virtual bool open(const string& filename, int fourcc, double fps, Size frameSize, bool isColor=true);
     virtual bool isOpened() const;
     virtual VideoWriter& operator << (const Mat& image);
-    
+
 protected:
     Ptr<CvVideoWriter> writer;
 };

@@ -8,14 +8,15 @@
 #include <iostream>
 
 
-class surf_service : public cfw_surf {
+class surf_service : public cfw_surf
+{
 public:
     surf_service() : _surf(cv::SURF(100, 4, 2, true)) {};
-    ~surf_service(){};
+    ~surf_service() {};
 
     cfw_id sid() const {
         return cfw_surf_id;
-    }   
+    }
     cfw_id cid() const {
         return std::make_pair("opencv_surf", "1");
     }
@@ -27,7 +28,7 @@ public:
             mat.data[i] = data[i];
         }
         std::vector<cv::KeyPoint> k;
-        _surf(mat, mat, k); 
+        _surf(mat, mat, k);
         std::vector<float> kk;
         for (std::vector<cv::KeyPoint>::iterator it = k.begin(); it != k.end(); ++it) {
             kk.push_back((*it).pt.x);
@@ -35,7 +36,7 @@ public:
             kk.push_back((*it).size);
         }
         return kk;
-    } 
+    }
 
     std::vector<float> descriptors(cfw_matrix* image) const {
         cv::Mat mat(image->height(), image->width(), 0);
@@ -45,9 +46,9 @@ public:
         }
         std::vector<float> d;
         std::vector<cv::KeyPoint> k;
-        _surf(mat, mat, k, d);  
+        _surf(mat, mat, k, d);
         return d;
-    } 
+    }
 
 private:
     cv::SURF _surf;
@@ -84,11 +85,13 @@ private:
 };
 
 extern "C" cfw_component* cfw_create_component(cfw_portal* portal,
-        const std::string& cfg) {
+        const std::string& cfg)
+{
     return new opencv_surf(portal, cfg);
 }
 
-extern "C" void cfw_destroy_component(cfw_component* component) {
+extern "C" void cfw_destroy_component(cfw_component* component)
+{
     delete static_cast<opencv_surf*>(component);
 }
 

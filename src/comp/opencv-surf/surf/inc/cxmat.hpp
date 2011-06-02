@@ -66,10 +66,9 @@ inline Mat::Mat(int _rows, int _cols, int _type)
 
 inline Mat::Mat(int _rows, int _cols, int _type, const Scalar& _s)
     : flags(0), rows(0), cols(0), step(0), data(0), refcount(0),
-    datastart(0), dataend(0)
+      datastart(0), dataend(0)
 {
-    if(_rows > 0 && _cols > 0)
-    {
+    if(_rows > 0 && _cols > 0) {
         create(_rows, _cols, _type);
         *this = _s;
     }
@@ -77,26 +76,25 @@ inline Mat::Mat(int _rows, int _cols, int _type, const Scalar& _s)
 
 inline Mat::Mat(Size _size, int _type)
     : flags(0), rows(0), cols(0), step(0), data(0), refcount(0),
-    datastart(0), dataend(0)
+      datastart(0), dataend(0)
 {
     if( _size.height > 0 && _size.width > 0 )
         create( _size.height, _size.width, _type );
 }
-    
+
 inline Mat::Mat(Size _size, int _type, const Scalar& _s)
-: flags(0), rows(0), cols(0), step(0), data(0), refcount(0),
-datastart(0), dataend(0)
+    : flags(0), rows(0), cols(0), step(0), data(0), refcount(0),
+      datastart(0), dataend(0)
 {
-    if( _size.height > 0 && _size.width > 0 )
-    {
+    if( _size.height > 0 && _size.width > 0 ) {
         create( _size.height, _size.width, _type );
         *this = _s;
     }
-}    
+}
 
 inline Mat::Mat(const Mat& m)
     : flags(m.flags), rows(m.rows), cols(m.cols), step(m.step), data(m.data),
-    refcount(m.refcount), datastart(m.datastart), dataend(m.dataend)
+      refcount(m.refcount), datastart(m.datastart), dataend(m.dataend)
 {
     if( refcount )
         CV_XADD(refcount, 1);
@@ -104,17 +102,14 @@ inline Mat::Mat(const Mat& m)
 
 inline Mat::Mat(int _rows, int _cols, int _type, void* _data, size_t _step)
     : flags(MAGIC_VAL + (_type & TYPE_MASK)), rows(_rows), cols(_cols),
-    step(_step), data((uchar*)_data), refcount(0),
-    datastart((uchar*)_data), dataend((uchar*)_data)
+      step(_step), data((uchar*)_data), refcount(0),
+      datastart((uchar*)_data), dataend((uchar*)_data)
 {
     size_t minstep = cols*elemSize();
-    if( step == AUTO_STEP )
-    {
+    if( step == AUTO_STEP ) {
         step = minstep;
         flags |= CONTINUOUS_FLAG;
-    }
-    else
-    {
+    } else {
         if( rows == 1 ) step = minstep;
         CV_DbgAssert( step >= minstep );
         flags |= step == minstep ? CONTINUOUS_FLAG : 0;
@@ -124,17 +119,14 @@ inline Mat::Mat(int _rows, int _cols, int _type, void* _data, size_t _step)
 
 inline Mat::Mat(Size _size, int _type, void* _data, size_t _step)
     : flags(MAGIC_VAL + (_type & TYPE_MASK)), rows(_size.height), cols(_size.width),
-    step(_step), data((uchar*)_data), refcount(0),
-    datastart((uchar*)_data), dataend((uchar*)_data)
+      step(_step), data((uchar*)_data), refcount(0),
+      datastart((uchar*)_data), dataend((uchar*)_data)
 {
     size_t minstep = cols*elemSize();
-    if( step == AUTO_STEP )
-    {
+    if( step == AUTO_STEP ) {
         step = minstep;
         flags |= CONTINUOUS_FLAG;
-    }
-    else
-    {
+    } else {
         if( rows == 1 ) step = minstep;
         CV_DbgAssert( step >= minstep );
         flags |= step == minstep ? CONTINUOUS_FLAG : 0;
@@ -145,13 +137,15 @@ inline Mat::Mat(Size _size, int _type, void* _data, size_t _step)
 inline Mat::Mat(const Mat& m, const Range& rowRange, const Range& colRange)
 {
     flags = m.flags;
-    step = m.step; refcount = m.refcount;
-    data = m.data; datastart = m.datastart; dataend = m.dataend;
+    step = m.step;
+    refcount = m.refcount;
+    data = m.data;
+    datastart = m.datastart;
+    dataend = m.dataend;
 
     if( rowRange == Range::all() )
         rows = m.rows;
-    else
-    {
+    else {
         CV_Assert( 0 <= rowRange.start && rowRange.start <= rowRange.end && rowRange.end <= m.rows );
         rows = rowRange.size();
         data += step*rowRange.start;
@@ -159,8 +153,7 @@ inline Mat::Mat(const Mat& m, const Range& rowRange, const Range& colRange)
 
     if( colRange == Range::all() )
         cols = m.cols;
-    else
-    {
+    else {
         CV_Assert( 0 <= colRange.start && colRange.start <= colRange.end && colRange.end <= m.cols );
         cols = colRange.size();
         data += colRange.start*elemSize();
@@ -178,13 +171,13 @@ inline Mat::Mat(const Mat& m, const Range& rowRange, const Range& colRange)
 
 inline Mat::Mat(const Mat& m, const Rect& roi)
     : flags(m.flags), rows(roi.height), cols(roi.width),
-    step(m.step), data(m.data + roi.y*step), refcount(m.refcount),
-    datastart(m.datastart), dataend(m.dataend)
+      step(m.step), data(m.data + roi.y*step), refcount(m.refcount),
+      datastart(m.datastart), dataend(m.dataend)
 {
     flags &= roi.width < m.cols ? ~CONTINUOUS_FLAG : -1;
     data += roi.x*elemSize();
     CV_Assert( 0 <= roi.x && 0 <= roi.width && roi.x + roi.width <= m.cols &&
-        0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= m.rows );
+               0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= m.rows );
     if( refcount )
         CV_XADD(refcount, 1);
     if( rows <= 0 || cols <= 0 )
@@ -193,15 +186,14 @@ inline Mat::Mat(const Mat& m, const Rect& roi)
 
 inline Mat::Mat(const CvMat* m, bool copyData)
     : flags(MAGIC_VAL + (m->type & (CV_MAT_TYPE_MASK|CV_MAT_CONT_FLAG))),
-    rows(m->rows), cols(m->cols), step(m->step), data(m->data.ptr), refcount(0),
-    datastart(m->data.ptr), dataend(m->data.ptr)
+      rows(m->rows), cols(m->cols), step(m->step), data(m->data.ptr), refcount(0),
+      datastart(m->data.ptr), dataend(m->data.ptr)
 {
     if( step == 0 )
         step = cols*elemSize();
     size_t minstep = cols*elemSize();
     dataend += step*(rows-1) + minstep;
-    if( copyData )
-    {
+    if( copyData ) {
         data = datastart = dataend = 0;
         Mat(m->rows, m->cols, m->type, m->data.ptr, m->step).copyTo(*this);
     }
@@ -212,15 +204,12 @@ static inline Mat cvarrToMat(const CvArr* arr, bool copyData=false,
 {
     if( CV_IS_MAT(arr) )
         return Mat((const CvMat*)arr, copyData );
-    else if( CV_IS_IMAGE(arr) )
-    {
+    else if( CV_IS_IMAGE(arr) ) {
         const IplImage* iplimg = (const IplImage*)arr;
         if( coiMode == 0 && iplimg->roi && iplimg->roi->coi > 0 )
             CV_Error(CV_BadCOI, "COI is not supported by the function");
         return Mat(iplimg, copyData);
-    }
-    else if( CV_IS_SEQ(arr) )
-    {
+    } else if( CV_IS_SEQ(arr) ) {
         CvSeq* seq = (CvSeq*)arr;
         CV_Assert(seq->total > 0 && CV_ELEM_SIZE(seq->flags) == seq->elem_size);
         if(!copyData && seq->first->next == seq->first)
@@ -228,9 +217,7 @@ static inline Mat cvarrToMat(const CvArr* arr, bool copyData=false,
         Mat buf(seq->total, 1, CV_MAT_TYPE(seq->flags));
         cvCvtSeqToArray(seq, buf.data, CV_WHOLE_SEQ);
         return buf;
-    }
-    else
-    {
+    } else {
         CvMat hdr, *cvmat = cvGetMat( arr, &hdr, 0, allowND ? 1 : 0 );
         if( cvmat )
             return Mat(cvmat, copyData);
@@ -240,23 +227,21 @@ static inline Mat cvarrToMat(const CvArr* arr, bool copyData=false,
 
 template<typename _Tp> inline Mat::Mat(const vector<_Tp>& vec, bool copyData)
     : flags(MAGIC_VAL | DataType<_Tp>::type | CV_MAT_CONT_FLAG),
-    rows(0), cols(0), step(0), data(0), refcount(0),
-    datastart(0), dataend(0)
+      rows(0), cols(0), step(0), data(0), refcount(0),
+      datastart(0), dataend(0)
 {
     if(vec.empty())
         return;
-    if( !copyData )
-    {
+    if( !copyData ) {
         rows = (int)vec.size();
         cols = 1;
         step = sizeof(_Tp);
         data = datastart = (uchar*)&vec[0];
         dataend = datastart + rows*step;
-    }
-    else
+    } else
         Mat((int)vec.size(), 1, DataType<_Tp>::type, (uchar*)&vec[0]).copyTo(*this);
 }
-    
+
 inline Mat::~Mat()
 {
     release();
@@ -264,30 +249,46 @@ inline Mat::~Mat()
 
 inline Mat& Mat::operator = (const Mat& m)
 {
-    if( this != &m )
-    {
+    if( this != &m ) {
         if( m.refcount )
             CV_XADD(m.refcount, 1);
         release();
         flags = m.flags;
-        rows = m.rows; cols = m.cols;
-        step = m.step; data = m.data;
-        datastart = m.datastart; dataend = m.dataend;
+        rows = m.rows;
+        cols = m.cols;
+        step = m.step;
+        data = m.data;
+        datastart = m.datastart;
+        dataend = m.dataend;
         refcount = m.refcount;
     }
     return *this;
 }
 
-inline Mat Mat::row(int y) const { return Mat(*this, Range(y, y+1), Range::all()); }
-inline Mat Mat::col(int x) const { return Mat(*this, Range::all(), Range(x, x+1)); }
+inline Mat Mat::row(int y) const
+{
+    return Mat(*this, Range(y, y+1), Range::all());
+}
+inline Mat Mat::col(int x) const
+{
+    return Mat(*this, Range::all(), Range(x, x+1));
+}
 inline Mat Mat::rowRange(int startrow, int endrow) const
-    { return Mat(*this, Range(startrow, endrow), Range::all()); }
+{
+    return Mat(*this, Range(startrow, endrow), Range::all());
+}
 inline Mat Mat::rowRange(const Range& r) const
-    { return Mat(*this, r, Range::all()); }
+{
+    return Mat(*this, r, Range::all());
+}
 inline Mat Mat::colRange(int startcol, int endcol) const
-    { return Mat(*this, Range::all(), Range(startcol, endcol)); }
+{
+    return Mat(*this, Range::all(), Range(startcol, endcol));
+}
 inline Mat Mat::colRange(const Range& r) const
-    { return Mat(*this, Range::all(), r); }
+{
+    return Mat(*this, Range::all(), r);
+}
 
 inline Mat Mat::diag(int d) const
 {
@@ -295,13 +296,10 @@ inline Mat Mat::diag(int d) const
     size_t esz = elemSize();
     int len;
 
-    if( d >= 0 )
-    {
+    if( d >= 0 ) {
         len = std::min(cols - d, rows);
         m.data += esz*d;
-    }
-    else
-    {
+    } else {
         len = std::min(rows + d, cols);
         m.data -= step*d;
     }
@@ -346,8 +344,7 @@ inline void Mat::create(int _rows, int _cols, int _type)
     if( data )
         release();
     CV_DbgAssert( _rows >= 0 && _cols >= 0 );
-    if( _rows > 0 && _cols > 0 )
-    {
+    if( _rows > 0 && _cols > 0 ) {
         flags = MAGIC_VAL + CONTINUOUS_FLAG + _type;
         rows = _rows;
         cols = _cols;
@@ -370,7 +367,9 @@ inline void Mat::create(Size _size, int _type)
 }
 
 inline void Mat::addref()
-{ if( refcount ) CV_XADD(refcount, 1); }
+{
+    if( refcount ) CV_XADD(refcount, 1);
+}
 
 inline void Mat::release()
 {
@@ -388,8 +387,7 @@ inline void Mat::locateROI( Size& wholeSize, Point& ofs ) const
     CV_DbgAssert( step > 0 );
     if( delta1 == 0 )
         ofs.x = ofs.y = 0;
-    else
-    {
+    else {
         ofs.y = (int)(delta1/step);
         ofs.x = (int)((delta1 - step*ofs.y)/esz);
         CV_DbgAssert( data == datastart + ofs.y*step + ofs.x*esz );
@@ -403,13 +401,15 @@ inline void Mat::locateROI( Size& wholeSize, Point& ofs ) const
 
 inline Mat& Mat::adjustROI( int dtop, int dbottom, int dleft, int dright )
 {
-    Size wholeSize; Point ofs;
+    Size wholeSize;
+    Point ofs;
     size_t esz = elemSize();
     locateROI( wholeSize, ofs );
     int row1 = std::max(ofs.y - dtop, 0), row2 = std::min(ofs.y + rows + dbottom, wholeSize.height);
     int col1 = std::max(ofs.x - dleft, 0), col2 = std::min(ofs.x + cols + dright, wholeSize.width);
     data += (row1 - ofs.y)*step + (col1 - ofs.x)*esz;
-    rows = row2 - row1; cols = col2 - col1;
+    rows = row2 - row1;
+    cols = col2 - col1;
     if( esz*cols == step || rows == 1 )
         flags |= CONTINUOUS_FLAG;
     else
@@ -423,7 +423,9 @@ inline Mat Mat::operator()( Range rowRange, Range colRange ) const
 }
 
 inline Mat Mat::operator()( const Rect& roi ) const
-{ return Mat(*this, roi); }
+{
+    return Mat(*this, roi);
+}
 
 inline Mat::operator CvMat() const
 {
@@ -441,15 +443,42 @@ inline Mat::operator IplImage() const
     return img;
 }
 
-inline bool Mat::isContinuous() const { return (flags & CONTINUOUS_FLAG) != 0; }
-inline size_t Mat::elemSize() const { return CV_ELEM_SIZE(flags); }
-inline size_t Mat::elemSize1() const { return CV_ELEM_SIZE1(flags); }
-inline int Mat::type() const { return CV_MAT_TYPE(flags); }
-inline int Mat::depth() const { return CV_MAT_DEPTH(flags); }
-inline int Mat::channels() const { return CV_MAT_CN(flags); }
-inline size_t Mat::step1() const { return step/elemSize1(); }
-inline Size Mat::size() const { return Size(cols, rows); }
-inline bool Mat::empty() const { return data == 0; }
+inline bool Mat::isContinuous() const
+{
+    return (flags & CONTINUOUS_FLAG) != 0;
+}
+inline size_t Mat::elemSize() const
+{
+    return CV_ELEM_SIZE(flags);
+}
+inline size_t Mat::elemSize1() const
+{
+    return CV_ELEM_SIZE1(flags);
+}
+inline int Mat::type() const
+{
+    return CV_MAT_TYPE(flags);
+}
+inline int Mat::depth() const
+{
+    return CV_MAT_DEPTH(flags);
+}
+inline int Mat::channels() const
+{
+    return CV_MAT_CN(flags);
+}
+inline size_t Mat::step1() const
+{
+    return step/elemSize1();
+}
+inline Size Mat::size() const
+{
+    return Size(cols, rows);
+}
+inline bool Mat::empty() const
+{
+    return data == 0;
+}
 
 inline uchar* Mat::ptr(int y)
 {
@@ -478,35 +507,35 @@ template<typename _Tp> inline const _Tp* Mat::ptr(int y) const
 template<typename _Tp> inline _Tp& Mat::at(int y, int x)
 {
     CV_DbgAssert( (unsigned)y < (unsigned)rows &&
-        (unsigned)(x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
-        CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
+                  (unsigned)(x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
+                  CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
     return ((_Tp*)(data + step*y))[x];
 }
 
 template<typename _Tp> inline const _Tp& Mat::at(int y, int x) const
 {
     CV_DbgAssert( (unsigned)y < (unsigned)rows &&
-        (unsigned)(x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
-        CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
+                  (unsigned)(x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
+                  CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
     return ((const _Tp*)(data + step*y))[x];
 }
 
 template<typename _Tp> inline _Tp& Mat::at(Point pt)
 {
     CV_DbgAssert( (unsigned)pt.y < (unsigned)rows &&
-        (unsigned)(pt.x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
-        CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
+                  (unsigned)(pt.x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
+                  CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
     return ((_Tp*)(data + step*pt.y))[pt.x];
 }
 
 template<typename _Tp> inline const _Tp& Mat::at(Point pt) const
 {
     CV_DbgAssert( (unsigned)pt.y < (unsigned)rows &&
-        (unsigned)(pt.x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
-        CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
+                  (unsigned)(pt.x*DataType<_Tp>::channels) < (unsigned)(cols*channels()) &&
+                  CV_ELEM_SIZE1(DataType<_Tp>::depth) == elemSize1());
     return ((const _Tp*)(data + step*pt.y))[pt.x];
 }
-    
+
 template<typename _Tp> inline MatConstIterator_<_Tp> Mat::begin() const
 {
     CV_DbgAssert( elemSize() == sizeof(_Tp) );
@@ -534,20 +563,25 @@ template<typename _Tp> inline MatIterator_<_Tp> Mat::end()
     it.ptr = it.sliceEnd = (_Tp*)(data + step*(rows-1)) + cols;
     return it;
 }
-    
-    
+
+
 static inline void swap( Mat& a, Mat& b )
 {
     std::swap( a.flags, b.flags );
-    std::swap( a.rows, b.rows ); std::swap( a.cols, b.cols );
-    std::swap( a.step, b.step ); std::swap( a.data, b.data );
+    std::swap( a.rows, b.rows );
+    std::swap( a.cols, b.cols );
+    std::swap( a.step, b.step );
+    std::swap( a.data, b.data );
     std::swap( a.datastart, b.datastart );
     std::swap( a.dataend, b.dataend );
     std::swap( a.refcount, b.refcount );
 }
 
 inline SVD::SVD() {}
-inline SVD::SVD( const Mat& m, int flags ) { operator ()(m, flags); }
+inline SVD::SVD( const Mat& m, int flags )
+{
+    operator ()(m, flags);
+}
 inline void SVD::solveZ( const Mat& m, Mat& dst )
 {
     SVD svd(m);
@@ -557,22 +591,34 @@ inline void SVD::solveZ( const Mat& m, Mat& dst )
 ///////////////////////////////// Mat_<_Tp> ////////////////////////////////////
 
 template<typename _Tp> inline Mat_<_Tp>::Mat_() :
-    Mat() { flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<_Tp>::type; }
-    
+    Mat()
+{
+    flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<_Tp>::type;
+}
+
 template<typename _Tp> inline Mat_<_Tp>::Mat_(int _rows, int _cols) :
     Mat(_rows, _cols, DataType<_Tp>::type) {}
 
 template<typename _Tp> inline Mat_<_Tp>::Mat_(int _rows, int _cols, const _Tp& value) :
-    Mat(_rows, _cols, DataType<_Tp>::type) { *this = value; }
+    Mat(_rows, _cols, DataType<_Tp>::type)
+{
+    *this = value;
+}
 
 template<typename _Tp> inline Mat_<_Tp>::Mat_(Size _size) :
     Mat(_size.height, _size.width, DataType<_Tp>::type) {}
-    
+
 template<typename _Tp> inline Mat_<_Tp>::Mat_(Size _size, const _Tp& value) :
-    Mat(_size.height, _size.width, DataType<_Tp>::type) { *this = value; }
-    
+    Mat(_size.height, _size.width, DataType<_Tp>::type)
+{
+    *this = value;
+}
+
 template<typename _Tp> inline Mat_<_Tp>::Mat_(const Mat& m) : Mat()
-{ flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<_Tp>::type; *this = m; }
+{
+    flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<_Tp>::type;
+    *this = m;
+}
 
 template<typename _Tp> inline Mat_<_Tp>::Mat_(const Mat_& m) : Mat(m) {}
 
@@ -599,13 +645,11 @@ template<typename _Tp> inline Mat_<_Tp>::Mat_(const vector<_Tp>& vec, bool copyD
 
 template<typename _Tp> inline Mat_<_Tp>& Mat_<_Tp>::operator = (const Mat& m)
 {
-    if( DataType<_Tp>::type == m.type() )
-    {
+    if( DataType<_Tp>::type == m.type() ) {
         Mat::operator = (m);
         return *this;
     }
-    if( DataType<_Tp>::depth == m.depth() )
-    {
+    if( DataType<_Tp>::depth == m.depth() ) {
         return (*this = m.reshape(DataType<_Tp>::channels));
     }
     CV_DbgAssert(DataType<_Tp>::channels == m.channels());
@@ -625,7 +669,7 @@ template<typename _Tp> inline Mat_<_Tp>& Mat_<_Tp>::operator = (const _Tp& s)
     Mat::operator=(Scalar((const VT&)s));
     return *this;
 }
-    
+
 
 template<typename _Tp> inline void Mat_<_Tp>::create(int _rows, int _cols)
 {
@@ -638,19 +682,31 @@ template<typename _Tp> inline void Mat_<_Tp>::create(Size _size)
 }
 
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::cross(const Mat_& m) const
-{ return Mat_<_Tp>(Mat::cross(m)); }
+{
+    return Mat_<_Tp>(Mat::cross(m));
+}
 
 template<typename _Tp> template<typename T2> inline Mat_<_Tp>::operator Mat_<T2>() const
-{ return Mat_<T2>(*this); }
+{
+    return Mat_<T2>(*this);
+}
 
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::row(int y) const
-{ return Mat_(*this, Range(y, y+1), Range::all()); }
+{
+    return Mat_(*this, Range(y, y+1), Range::all());
+}
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::col(int x) const
-{ return Mat_(*this, Range::all(), Range(x, x+1)); }
+{
+    return Mat_(*this, Range::all(), Range(x, x+1));
+}
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::diag(int d) const
-{ return Mat_(Mat::diag(d)); }
+{
+    return Mat_(Mat::diag(d));
+}
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::clone() const
-{ return Mat_(Mat::clone()); }
+{
+    return Mat_(Mat::clone());
+}
 
 template<typename _Tp> inline size_t Mat_<_Tp>::elemSize() const
 {
@@ -678,25 +734,43 @@ template<typename _Tp> inline int Mat_<_Tp>::channels() const
     CV_DbgAssert( Mat::channels() == DataType<_Tp>::channels );
     return DataType<_Tp>::channels;
 }
-template<typename _Tp> inline size_t Mat_<_Tp>::stepT() const { return step/elemSize(); }
-template<typename _Tp> inline size_t Mat_<_Tp>::step1() const { return step/elemSize1(); }
+template<typename _Tp> inline size_t Mat_<_Tp>::stepT() const
+{
+    return step/elemSize();
+}
+template<typename _Tp> inline size_t Mat_<_Tp>::step1() const
+{
+    return step/elemSize1();
+}
 
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::reshape(int _rows) const
-{ return Mat_<_Tp>(Mat::reshape(0,_rows)); }
+{
+    return Mat_<_Tp>(Mat::reshape(0,_rows));
+}
 
 template<typename _Tp> inline Mat_<_Tp>& Mat_<_Tp>::adjustROI( int dtop, int dbottom, int dleft, int dright )
-{ return (Mat_<_Tp>&)(Mat::adjustROI(dtop, dbottom, dleft, dright));  }
+{
+    return (Mat_<_Tp>&)(Mat::adjustROI(dtop, dbottom, dleft, dright));
+}
 
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::operator()( const Range& rowRange, const Range& colRange ) const
-{ return Mat_<_Tp>(*this, rowRange, colRange); }
+{
+    return Mat_<_Tp>(*this, rowRange, colRange);
+}
 
 template<typename _Tp> inline Mat_<_Tp> Mat_<_Tp>::operator()( const Rect& roi ) const
-{ return Mat_<_Tp>(*this, roi); }
+{
+    return Mat_<_Tp>(*this, roi);
+}
 
 template<typename _Tp> inline _Tp* Mat_<_Tp>::operator [](int y)
-{ return (_Tp*)ptr(y); }
+{
+    return (_Tp*)ptr(y);
+}
 template<typename _Tp> inline const _Tp* Mat_<_Tp>::operator [](int y) const
-{ return (const _Tp*)ptr(y); }
+{
+    return (const _Tp*)ptr(y);
+}
 
 template<typename _Tp> inline _Tp& Mat_<_Tp>::operator ()(int row, int col)
 {
@@ -726,8 +800,8 @@ template<typename _Tp> inline Mat_<_Tp>::operator vector<_Tp>() const
 {
     CV_Assert( rows == 1 || cols == 1 );
     return isContinuous() ?
-        vector<_Tp>((_Tp*)data,(_Tp*)data + (rows + cols - 1)) :
-        (vector<_Tp>)((Mat_<_Tp>)this->t());
+           vector<_Tp>((_Tp*)data,(_Tp*)data + (rows + cols - 1)) :
+           (vector<_Tp>)((Mat_<_Tp>)this->t());
 }
 
 template<typename T1, typename T2, typename Op> inline void
@@ -738,8 +812,7 @@ process( const Mat_<T1>& m1, Mat_<T2>& m2, Op op )
 
     CV_DbgAssert( m1.size() == m2.size() );
 
-    for( y = 0; y < rows; y++ )
-    {
+    for( y = 0; y < rows; y++ ) {
         const T1* src = m1[y];
         T2* dst = m2[y];
 
@@ -755,8 +828,7 @@ process( const Mat_<T1>& m1, const Mat_<T2>& m2, Mat_<T3>& m3, Op op )
 
     CV_DbgAssert( m1.size() == m2.size() );
 
-    for( y = 0; y < rows; y++ )
-    {
+    for( y = 0; y < rows; y++ ) {
         const T1* src1 = m1[y];
         const T2* src2 = m2[y];
         T3* dst = m3[y];
@@ -779,38 +851,59 @@ template<typename E, typename M> class CV_EXPORTS MatExpr_ : public MatExpr_Base
 public:
     MatExpr_(const E& _e) : e(_e) {}
     ~MatExpr_() {}
-    operator M() const { return (M)e; }
-    void assignTo(M& m, int type=-1) const { e.assignTo(m, type); }
+    operator M() const {
+        return (M)e;
+    }
+    void assignTo(M& m, int type=-1) const {
+        e.assignTo(m, type);
+    }
 
-    M row(int y) const { return ((M)e).row(y); }
-    M col(int x) const { return ((M)e).col(x); }
-    M diag(int d=0) const { return ((M)e).diag(d); }
+    M row(int y) const {
+        return ((M)e).row(y);
+    }
+    M col(int x) const {
+        return ((M)e).col(x);
+    }
+    M diag(int d=0) const {
+        return ((M)e).diag(d);
+    }
 
-    M operator()( const Range& rowRange, const Range& colRange ) const
-    { return ((M)e)(rowRange, colRange); }
-    M operator()( const Rect& roi ) const { return ((M)e)(roi); }
+    M operator()( const Range& rowRange, const Range& colRange ) const {
+        return ((M)e)(rowRange, colRange);
+    }
+    M operator()( const Rect& roi ) const {
+        return ((M)e)(roi);
+    }
 
-    M cross(const M& m) const { return ((M)e).cross(m); }
-    double dot(const M& m) const { return ((M)e).dot(m); }
+    M cross(const M& m) const {
+        return ((M)e).cross(m);
+    }
+    double dot(const M& m) const {
+        return ((M)e).dot(m);
+    }
 
-    MatExpr_<MatExpr_Op2_<M, double, M, MatOp_T_<Mat> >, M> t() const
-    { return ((M)e).t(); }
-    MatExpr_<MatExpr_Op2_<M, int, M, MatOp_Inv_<Mat> >, M> inv(int method=DECOMP_LU) const
-    { return ((M)e).inv(method); }
+    MatExpr_<MatExpr_Op2_<M, double, M, MatOp_T_<Mat> >, M> t() const {
+        return ((M)e).t();
+    }
+    MatExpr_<MatExpr_Op2_<M, int, M, MatOp_Inv_<Mat> >, M> inv(int method=DECOMP_LU) const {
+        return ((M)e).inv(method);
+    }
 
     MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
-    mul(const M& m, double scale=1) const
-    { return ((M)e).mul(m, scale); }
+    mul(const M& m, double scale=1) const {
+        return ((M)e).mul(m, scale);
+    }
     template<typename A> MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M >
-    mul(const MatExpr_<A, M>& m, double scale=1) const
-    { return ((M)e).mul(m, scale); }
+    mul(const MatExpr_<A, M>& m, double scale=1) const {
+        return ((M)e).mul(m, scale);
+    }
 
     E e;
 };
 
 
 inline Mat::Mat(const MatExpr_Base& expr)
- : flags(0), rows(0), cols(0), step(0), data(0), refcount(0), datastart(0), dataend(0)
+    : flags(0), rows(0), cols(0), step(0), data(0), refcount(0), datastart(0), dataend(0)
 {
     expr.assignTo(*this);
 }
@@ -833,24 +926,24 @@ template<typename _Tp> inline Mat_<_Tp>& Mat_<_Tp>::operator = (const MatExpr_Ba
 }
 
 template<typename _Tp> inline Mat_<_Tp>::operator MatExpr_<Mat, Mat>() const
-{ return MatExpr_<Mat, Mat>(*this); }
+{
+    return MatExpr_<Mat, Mat>(*this);
+}
 
 inline Mat::operator MatExpr_<Mat, Mat>() const
-{ return MatExpr_<Mat, Mat>(*this); }
+{
+    return MatExpr_<Mat, Mat>(*this);
+}
 
 template<typename M> class CV_EXPORTS MatOp_Sub_
 {
 public:
     MatOp_Sub_() {}
 
-    static void apply(const M& a, const M& b, M& c, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+    static void apply(const M& a, const M& b, M& c, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             subtract( a, b, c );
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, temp);
             temp.convertTo(c, type);
@@ -863,8 +956,7 @@ template<typename M> class CV_EXPORTS MatOp_Scale_
 public:
     MatOp_Scale_() {}
 
-    static void apply(const M& a, double alpha, M& c, int type=-1)
-    {
+    static void apply(const M& a, double alpha, M& c, int type=-1) {
         a.convertTo(c, type, alpha, 0);
     }
 };
@@ -874,8 +966,7 @@ template<typename M> class CV_EXPORTS MatOp_ScaleAddS_
 public:
     MatOp_ScaleAddS_() {}
 
-    static void apply(const M& a, double alpha, double beta, M& c, int type=-1)
-    {
+    static void apply(const M& a, double alpha, double beta, M& c, int type=-1) {
         a.convertTo(c, type, alpha, beta);
     }
 };
@@ -885,14 +976,10 @@ template<typename M> class CV_EXPORTS MatOp_AddS_
 public:
     MatOp_AddS_() {}
 
-    static void apply(const M& a, const Scalar& s, M& c, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+    static void apply(const M& a, const Scalar& s, M& c, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             add(a, s, c);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, s, temp);
             temp.convertTo(c, type);
@@ -906,14 +993,10 @@ public:
     MatOp_AddEx_() {}
 
     static void apply(const M& a, double alpha, const M& b,
-                      double beta, double gamma, M& c, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+                      double beta, double gamma, M& c, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             addWeighted(a, alpha, b, beta, gamma, c);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, alpha, b, beta, gamma, temp);
             temp.convertTo(c, type);
@@ -926,11 +1009,9 @@ template<typename M> class CV_EXPORTS MatOp_Bin_
 public:
     MatOp_Bin_() {}
 
-    static void apply(const M& a, const M& b, int _op, M& c, int type=-1)
-    {
+    static void apply(const M& a, const M& b, int _op, M& c, int type=-1) {
         char op = (char)_op;
-        if( type == a.type() || type < 0 )
-        {
+        if( type == a.type() || type < 0 ) {
             if( op == '&' )
                 bitwise_and( a, b, c );
             else if( op == '|' )
@@ -945,9 +1026,7 @@ public:
                 absdiff( a, b, c );
             else
                 assert(0);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, op, temp);
             temp.convertTo(c, type);
@@ -960,11 +1039,9 @@ template<typename M> class CV_EXPORTS MatOp_BinS_
 public:
     MatOp_BinS_() {}
 
-    static void apply(const M& a, const Scalar& s, int _op, M& c, int type=-1)
-    {
+    static void apply(const M& a, const Scalar& s, int _op, M& c, int type=-1) {
         char op = (char)_op;
-        if( type == a.type() || type < 0 )
-        {
+        if( type == a.type() || type < 0 ) {
             if( op == '&' )
                 bitwise_and( a, s, c );
             else if( op == '|' )
@@ -981,9 +1058,7 @@ public:
                 bitwise_not( a, c );
             else
                 assert(0);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, s, op, temp);
             temp.convertTo(c, type);
@@ -996,16 +1071,12 @@ template<typename M> class CV_EXPORTS MatOp_T_
 public:
     MatOp_T_() {}
 
-    static void apply(const M& a, double scale, M& c, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+    static void apply(const M& a, double scale, M& c, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             transpose(a, c);
             if( fabs(scale - 1) > DBL_EPSILON )
                 c.convertTo(c, -1, scale, 0);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, scale, temp);
             temp.convertTo(c, type);
@@ -1019,14 +1090,10 @@ template<typename M> class CV_EXPORTS MatOp_MatMul_
 public:
     MatOp_MatMul_() {}
 
-    static void apply(const M& a, const M& b, double scale, int flags, M& c, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+    static void apply(const M& a, const M& b, double scale, int flags, M& c, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             gemm(a, b, scale, Mat(), 0, c, flags);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, scale, flags, temp);
             temp.convertTo(c, type);
@@ -1041,14 +1108,10 @@ public:
     MatOp_MatMulAdd_() {}
 
     static void apply(const M& a, const M& b, double alpha,
-        const M& c, double beta, int flags, M& d, int type=-1)
-    {
-        if( type == a.type() || type < 0 )
-        {
+                      const M& c, double beta, int flags, M& d, int type=-1) {
+        if( type == a.type() || type < 0 ) {
             gemm(a, b, alpha, c, beta, d, flags);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, alpha, c, beta, flags, temp);
             temp.convertTo(d, type);
@@ -1062,14 +1125,10 @@ template<typename M> class CV_EXPORTS MatOp_Cmp_
 public:
     MatOp_Cmp_() {}
 
-    static void apply(const M& a, const M& b, int op, M& c, int type=-1)
-    {
-        if( type == CV_8UC1 || type == -1 )
-        {
+    static void apply(const M& a, const M& b, int op, M& c, int type=-1) {
+        if( type == CV_8UC1 || type == -1 ) {
             compare(a, b, c, op);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, op, temp);
             temp.convertTo(c, type);
@@ -1082,14 +1141,10 @@ template<typename M> class CV_EXPORTS MatOp_CmpS_
 public:
     MatOp_CmpS_() {}
 
-    static void apply(const M& a, double alpha, int op, M& c, int type=-1)
-    {
-        if( type == CV_8UC1 || type == -1 )
-        {
+    static void apply(const M& a, double alpha, int op, M& c, int type=-1) {
+        if( type == CV_8UC1 || type == -1 ) {
             compare(a, alpha, c, op);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, alpha, op, temp);
             temp.convertTo(c, type);
@@ -1102,17 +1157,13 @@ template<typename M> class CV_EXPORTS MatOp_MulDiv_
 public:
     MatOp_MulDiv_() {}
 
-    static void apply(const M& a, const M& b, double alpha, char op, M& c, int type=-1)
-    {
-        if( type == a.type() || type == -1 )
-        {
+    static void apply(const M& a, const M& b, double alpha, char op, M& c, int type=-1) {
+        if( type == a.type() || type == -1 ) {
             if( op == '*' )
                 multiply( a, b, c, alpha );
             else
                 divide( a, b, c, alpha );
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, alpha, op, temp);
             temp.convertTo(c, type);
@@ -1125,15 +1176,11 @@ template<typename M> class CV_EXPORTS MatOp_DivRS_
 public:
     MatOp_DivRS_() {}
 
-    static void apply(const M& a, double alpha, M& c, int type=-1)
-    {
-        if( type == a.type() || type == -1 )
-        {
+    static void apply(const M& a, double alpha, M& c, int type=-1) {
+        if( type == a.type() || type == -1 ) {
             c.create(a.rows, a.cols, a.type());
             divide( alpha, a, c );
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, alpha, temp);
             temp.convertTo(c, type);
@@ -1147,14 +1194,10 @@ template<typename M> class CV_EXPORTS MatOp_Inv_
 public:
     MatOp_Inv_() {}
 
-    static void apply(const M& a, int method, M& c, int type=-1)
-    {
-        if( type == a.type() || type == -1 )
-        {
+    static void apply(const M& a, int method, M& c, int type=-1) {
+        if( type == a.type() || type == -1 ) {
             invert(a, c, method);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, method, temp);
             temp.convertTo(c, type);
@@ -1168,14 +1211,10 @@ template<typename M> class CV_EXPORTS MatOp_Solve_
 public:
     MatOp_Solve_() {}
 
-    static void apply(const M& a, const M& b, int method, M& c, int type=-1)
-    {
-        if( type == a.type() || type == -1 )
-        {
+    static void apply(const M& a, const M& b, int method, M& c, int type=-1) {
+        if( type == a.type() || type == -1 ) {
             solve(a, b, c, method);
-        }
-        else
-        {
+        } else {
             Mat temp;
             apply(a, b, method, temp);
             temp.convertTo(c, type);
@@ -1188,8 +1227,7 @@ template<typename M> class CV_EXPORTS MatOp_Set_
 public:
     MatOp_Set_() {}
 
-    static void apply(Size size, int type0, const Scalar& s, int mtype, M& c, int type=-1)
-    {
+    static void apply(Size size, int type0, const Scalar& s, int mtype, M& c, int type=-1) {
         if( type < 0 )
             type = type0;
         c.create(size.height, size.width, type);
@@ -1207,8 +1245,14 @@ class CV_EXPORTS MatExpr_Op1_
 {
 public:
     MatExpr_Op1_(const A1& _a1) : a1(_a1) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
     A1 a1;
 };
@@ -1218,10 +1262,17 @@ class CV_EXPORTS MatExpr_Op2_
 {
 public:
     MatExpr_Op2_(const A1& _a1, const A2& _a2) : a1(_a1), a2(_a2) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, a2, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, a2, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
-    A1 a1; A2 a2;
+    A1 a1;
+    A2 a2;
 };
 
 template<typename A1, typename A2, typename A3, typename M, typename Op>
@@ -1229,10 +1280,18 @@ class CV_EXPORTS MatExpr_Op3_
 {
 public:
     MatExpr_Op3_(const A1& _a1, const A2& _a2, const A3& _a3) : a1(_a1), a2(_a2), a3(_a3) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, a2, a3, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, a2, a3, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
-    A1 a1; A2 a2; A3 a3;
+    A1 a1;
+    A2 a2;
+    A3 a3;
 };
 
 template<typename A1, typename A2, typename A3, typename A4, typename M, typename Op>
@@ -1241,10 +1300,19 @@ class CV_EXPORTS MatExpr_Op4_
 public:
     MatExpr_Op4_(const A1& _a1, const A2& _a2, const A3& _a3, const A4& _a4)
         : a1(_a1), a2(_a2), a3(_a3), a4(_a4) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, a2, a3, a4, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, a2, a3, a4, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
-    A1 a1; A2 a2; A3 a3; A4 a4;
+    A1 a1;
+    A2 a2;
+    A3 a3;
+    A4 a4;
 };
 
 template<typename A1, typename A2, typename A3, typename A4, typename A5, typename M, typename Op>
@@ -1253,10 +1321,20 @@ class CV_EXPORTS MatExpr_Op5_
 public:
     MatExpr_Op5_(const A1& _a1, const A2& _a2, const A3& _a3, const A4& _a4, const A5& _a5)
         : a1(_a1), a2(_a2), a3(_a3), a4(_a4), a5(_a5) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, a2, a3, a4, a5, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, a2, a3, a4, a5, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
-    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5;
+    A1 a1;
+    A2 a2;
+    A3 a3;
+    A4 a4;
+    A5 a5;
 };
 
 template<typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename M, typename Op>
@@ -1264,12 +1342,23 @@ class CV_EXPORTS MatExpr_Op6_
 {
 public:
     MatExpr_Op6_(const A1& _a1, const A2& _a2, const A3& _a3,
-                    const A4& _a4, const A5& _a5, const A6& _a6)
+                 const A4& _a4, const A5& _a5, const A6& _a6)
         : a1(_a1), a2(_a2), a3(_a3), a4(_a4), a5(_a5), a6(_a6) {}
-    void assignTo(Mat& m, int type=-1) const { Op::apply(a1, a2, a3, a4, a5, a6, (M&)m, type); }
-    operator M() const { M result; assignTo(result); return result; }
+    void assignTo(Mat& m, int type=-1) const {
+        Op::apply(a1, a2, a3, a4, a5, a6, (M&)m, type);
+    }
+    operator M() const {
+        M result;
+        assignTo(result);
+        return result;
+    }
 
-    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5; A6 a6;
+    A1 a1;
+    A2 a2;
+    A3 a3;
+    A4 a4;
+    A5 a5;
+    A6 a6;
 };
 
 ///////////////////////////////// Arithmetical Operations ///////////////////////////////////
@@ -1284,8 +1373,8 @@ operator + (const Mat& a, const Mat& b)
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op5_<Mat, double, Mat,
-double, double, Mat, MatOp_AddEx_<Mat> >, Mat >
-operator + (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         double, double, Mat, MatOp_AddEx_<Mat> >, Mat >
+         operator + (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op5_<Mat, double, Mat, double, double, Mat, MatOp_AddEx_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, 1, b, 1, 0));
@@ -1349,7 +1438,9 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator * (double alpha,
             const MatExpr_<MatExpr_Op2_<A, B, M, MatOp_Sub_<Mat> >, M>& a)
-{ return a*alpha; }
+{
+    return a*alpha;
+}
 
 
 // A*alpha
@@ -1374,37 +1465,49 @@ operator * (const Mat_<_Tp>& a, double alpha)
 static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat>
 operator * (double alpha, const Mat& a)
-{ return a*alpha; }
+{
+    return a*alpha;
+}
 
 // alpha*A
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat >
 operator * (double alpha, const Mat_<_Tp>& a)
-{ return a*alpha; }
+{
+    return a*alpha;
+}
 
 // A/alpha
 static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat>
 operator / (const Mat& a, double alpha)
-{ return a*(1./alpha); }
+{
+    return a*(1./alpha);
+}
 
 // A/alpha
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat >
 operator / (const Mat_<_Tp>& a, double alpha)
-{ return a*(1./alpha); }
+{
+    return a*(1./alpha);
+}
 
 // -A
 static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat>
 operator - (const Mat& a)
-{ return a*(-1); }
+{
+    return a*(-1);
+}
 
 // -A
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_Scale_<Mat> >, Mat >
 operator - (const Mat_<_Tp>& a)
-{ return a*(-1); }
+{
+    return a*(-1);
+}
 
 // E*alpha
 template<typename A, typename M> static inline
@@ -1438,33 +1541,43 @@ template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>
 operator * (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             double beta)
-{ return a.e.a1*(a.e.a2*beta); }
+{
+    return a.e.a1*(a.e.a2*beta);
+}
 
 // beta*(E*alpha) ~ E*(alpha*beta)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>
 operator * (double beta,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return a.e.a1*(a.e.a2*beta); }
+{
+    return a.e.a1*(a.e.a2*beta);
+}
 
 // (E*alpha)/beta ~ E*(alpha/beta)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>
 operator / (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             double beta)
-{ return a.e.a1*(a.e.a2/beta); }
+{
+    return a.e.a1*(a.e.a2/beta);
+}
 
 // -E ~ E*(-1)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, double, M, MatOp_Scale_<Mat> >, M>
 operator - (const MatExpr_<A, M>& a)
-{ return a*(-1.); }
+{
+    return a*(-1.);
+}
 
 // -(E*alpha) ~ E*(-alpha)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return a.e.a1*(-a.e.a2); }
+{
+    return a.e.a1*(-a.e.a2);
+}
 
 // A + alpha
 template<typename _Tp> static inline
@@ -1472,7 +1585,7 @@ MatExpr_<MatExpr_Op3_<Mat, double, double, Mat, MatOp_ScaleAddS_<Mat> >, Mat >
 operator + (const Mat_<_Tp>& a, double alpha)
 {
     typedef MatExpr_Op3_<Mat, double, double, Mat,
-        MatOp_ScaleAddS_<Mat> > MatExpr_Temp;
+            MatOp_ScaleAddS_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, 1, alpha));
 }
 
@@ -1482,7 +1595,7 @@ MatExpr_<MatExpr_Op2_<Mat, Scalar, Mat, MatOp_AddS_<Mat> >, Mat >
 operator + (const Mat_<_Tp>& a, const Scalar& alpha)
 {
     typedef MatExpr_Op2_<Mat, Scalar, Mat,
-        MatOp_AddS_<Mat> > MatExpr_Temp;
+            MatOp_AddS_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, alpha));
 }
 
@@ -1499,35 +1612,47 @@ operator + (const Mat& a, const Scalar& alpha)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, double, double, Mat, MatOp_ScaleAddS_<Mat> >, Mat >
 operator + (double alpha, const Mat_<_Tp>& a)
-{ return a + alpha; }
+{
+    return a + alpha;
+}
 
 // alpha + A
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op2_<Mat, Scalar, Mat, MatOp_AddS_<Mat> >, Mat >
 operator + (const Scalar& alpha, const Mat_<_Tp>& a)
-{ return a + alpha; }
+{
+    return a + alpha;
+}
 
 static inline
 MatExpr_<MatExpr_Op2_<Mat, Scalar, Mat, MatOp_AddS_<Mat> >, Mat >
 operator + (const Scalar& alpha, const Mat& a)
-{ return a + alpha; }
+{
+    return a + alpha;
+}
 
 // A - alpha
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, double, double, Mat, MatOp_ScaleAddS_<Mat> >, Mat >
 operator - (const Mat_<_Tp>& a, double alpha)
-{ return a + (-alpha); }
+{
+    return a + (-alpha);
+}
 
 // A - alpha
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op2_<Mat, Scalar, Mat, MatOp_AddS_<Mat> >, Mat >
 operator - (const Mat_<_Tp>& a, const Scalar& alpha)
-{ return a + (-alpha); }
+{
+    return a + (-alpha);
+}
 
 static inline
 MatExpr_<MatExpr_Op2_<Mat, Scalar, Mat, MatOp_AddS_<Mat> >, Mat >
 operator - (const Mat& a, const Scalar& alpha)
-{ return a + (-alpha); }
+{
+    return a + (-alpha);
+}
 
 // alpha - A
 template<typename _Tp> static inline
@@ -1535,7 +1660,7 @@ MatExpr_<MatExpr_Op3_<Mat, double, double, Mat, MatOp_ScaleAddS_<Mat> >, Mat >
 operator - (double alpha, const Mat_<_Tp>& a)
 {
     typedef MatExpr_Op3_<Mat, double, double, Mat,
-        MatOp_ScaleAddS_<Mat> > MatExpr_Temp;
+            MatOp_ScaleAddS_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, -1, alpha));
 }
 
@@ -1561,25 +1686,33 @@ operator + (const MatExpr_<A, M>& a, const Scalar& alpha)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator + (double alpha, const MatExpr_<A, M>& a)
-{ return a + alpha; }
+{
+    return a + alpha;
+}
 
 // alpha + E
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, Scalar, M, MatOp_AddS_<Mat> >, M>
 operator + (const Scalar& alpha, const MatExpr_<A, M>& a)
-{ return a + alpha; }
+{
+    return a + alpha;
+}
 
 // E - alpha
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (const MatExpr_<A, M>& a, double alpha)
-{ return a + (-alpha); }
+{
+    return a + (-alpha);
+}
 
 // E - alpha
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, Scalar, M, MatOp_AddS_<Mat> >, M>
 operator - (const MatExpr_<A, M>& a, const Scalar& alpha)
-{ return a + (-alpha); }
+{
+    return a + (-alpha);
+}
 
 // alpha - E
 template<typename A, typename M> static inline
@@ -1605,66 +1738,86 @@ template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator + (double beta,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return a + beta; }
+{
+    return a + beta;
+}
 
 // E*alpha - beta
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             double beta)
-{ return a + (-beta); }
+{
+    return a + (-beta);
+}
 
 // beta - E*alpha
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (double beta,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return (a.e.a1*(-a.e.a2)) + beta; }
+{
+    return (a.e.a1*(-a.e.a2)) + beta;
+}
 
 // (E*alpha + gamma) + beta ~ E*alpha + (gamma + beta)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator + (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a,
             double beta)
-{ return a.e.a1*a.e.a2 + (a.e.a3 + beta); }
+{
+    return a.e.a1*a.e.a2 + (a.e.a3 + beta);
+}
 
 // beta + (E*alpha + gamma)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator + (double beta, const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a + beta; }
+{
+    return a + beta;
+}
 
 // (E*alpha + gamma) - beta
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a,
             double beta)
-{ return a + (-beta); }
+{
+    return a + (-beta);
+}
 
 // beta - (E*alpha + gamma)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (double beta, const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a.e.a1*(-a.e.a2) + (beta - a.e.a3); }
+{
+    return a.e.a1*(-a.e.a2) + (beta - a.e.a3);
+}
 
 // (E*alpha + gamma)*beta
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator * (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a,
             double beta)
-{ return a.e.a1*(a.e.a2*beta) + (a.e.a3*beta); }
+{
+    return a.e.a1*(a.e.a2*beta) + (a.e.a3*beta);
+}
 
 // beta*(E*alpha + gamma)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator * (double beta, const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a*beta; }
+{
+    return a*beta;
+}
 
 // -(E*alpha + beta)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a*(-1); }
+{
+    return a*(-1);
+}
 
 // (A*u + B*v + w) + beta
 template<typename A, typename B, typename M> static inline
@@ -1681,14 +1834,18 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (double beta,
             const MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>& a)
-{ return a + beta; }
+{
+    return a + beta;
+}
 
 // (A*u + B*v + w) - beta
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>& a,
             double beta)
-{ return a + (-beta); }
+{
+    return a + (-beta);
+}
 
 // beta - (A*u + B*v + w)
 template<typename A, typename B, typename M> static inline
@@ -1708,7 +1865,7 @@ operator * (const MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_A
 {
     typedef MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(a.e.a1,
-        a.e.a2*beta, a.e.a3, a.e.a4*beta, a.e.a5*beta));
+                                     a.e.a2*beta, a.e.a3, a.e.a4*beta, a.e.a5*beta));
 }
 
 // beta*(A*u + B*v + w)
@@ -1716,13 +1873,17 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator * (double beta,
             const MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>& a)
-{ return a * beta; }
+{
+    return a * beta;
+}
 
 // -(A*u + B*v + w)
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>& a)
-{ return a*(-1); }
+{
+    return a*(-1);
+}
 
 // A*alpha + B
 template<typename A, typename M> static inline
@@ -1739,7 +1900,9 @@ template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const M& b,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return a + b; }
+{
+    return a + b;
+}
 
 // (A*alpha + beta) + B
 template<typename A, typename M> static inline
@@ -1756,7 +1919,9 @@ template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const M& b,
             const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a + b; }
+{
+    return a + b;
+}
 
 
 // A*alpha + E
@@ -1764,28 +1929,36 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             const MatExpr_<B, M>& b )
-{ return a + (M)b; }
+{
+    return a + (M)b;
+}
 
 // E + A*alpha
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const MatExpr_<B, M>& b,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return a + (M)b; }
+{
+    return a + (M)b;
+}
 
 // (A*alpha + beta) + E
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a,
             const MatExpr_<B, M>& b )
-{ return a + (M)b; }
+{
+    return a + (M)b;
+}
 
 // E + (A*alpha + beta)
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const MatExpr_<B, M>& b,
             const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return a + b; }
+{
+    return a + b;
+}
 
 // A*alpha + B*beta
 template<typename A, typename B, typename M> static inline
@@ -1812,7 +1985,9 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, B, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator + (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& b,
             const MatExpr_<MatExpr_Op3_<B, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a )
-{ return a + b; }
+{
+    return a + b;
+}
 
 // (A*alpha + beta) + (B*gamma + theta)
 template<typename A, typename B, typename M> static inline
@@ -1869,28 +2044,36 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             const MatExpr_<B, M>& b )
-{ return a - (M)b; }
+{
+    return a - (M)b;
+}
 
 // E - A*alpha
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<B, M>& b,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return (M)b - a; }
+{
+    return (M)b - a;
+}
 
 // (A*alpha + beta) - E
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a,
             const MatExpr_<B, M>& b )
-{ return a - (M)b; }
+{
+    return a - (M)b;
+}
 
 // E - (A*alpha + beta)
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op5_<A, double, M, double, double, M, MatOp_AddEx_<Mat> >, M>
 operator - (const MatExpr_<B, M>& b,
             const MatExpr_<MatExpr_Op3_<A, double, double, M, MatOp_ScaleAddS_<Mat> >, M>& a)
-{ return (M)b - a; }
+{
+    return (M)b - a;
+}
 
 // A*alpha - B*beta
 template<typename A, typename B, typename M> static inline
@@ -1961,11 +2144,11 @@ operator * ( const Mat& a, const Mat& b )
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op4_<Mat, Mat, double, int, Mat,
-MatOp_MatMul_<Mat> >, Mat >
-operator * ( const Mat_<_Tp>& a, const Mat_<_Tp>& b )
+         MatOp_MatMul_<Mat> >, Mat >
+         operator * ( const Mat_<_Tp>& a, const Mat_<_Tp>& b )
 {
     typedef MatExpr_Op4_<Mat, Mat, double, int, Mat,
-        MatOp_MatMul_<Mat> > MatExpr_Temp;
+            MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, b, 1, 0));
 }
 
@@ -2051,7 +2234,7 @@ operator * ( const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_T_<Mat> >, M>& a,
 {
     typedef MatExpr_Op4_<M, M, double, int, M, MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp((M)a.e.a1,
-        (M)b.e.a1, a.e.a2*b.e.a2, GEMM_1_T+GEMM_2_T));
+                                     (M)b.e.a1, a.e.a2*b.e.a2, GEMM_1_T+GEMM_2_T));
 }
 
 // (A*B)*alpha
@@ -2107,7 +2290,7 @@ operator * ( const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_ScaleAddS_<Mat> >, 
 {
     typedef MatExpr_Op4_<M, M, double, int, M, MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp((M)a.e.a1, (M)b.e.a1,
-        a.e.a2*b.e.a2, (M)b.e.a1, a.e.a3*b.e.a2, 0));
+                                     a.e.a2*b.e.a2, (M)b.e.a1, a.e.a3*b.e.a2, 0));
 }
 
 // (A*gamma)*(B*alpha + beta)
@@ -2118,7 +2301,7 @@ operator * ( const MatExpr_<MatExpr_Op2_<B, double, M, MatOp_Scale_<Mat> >, M>& 
 {
     typedef MatExpr_Op4_<M, M, double, int, M, MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp((M)a.e.a1, (M)b.e.a1,
-        a.e.a2*b.e.a2, (M)a.e.a1, a.e.a2*b.e.a3, 0));
+                                     a.e.a2*b.e.a2, (M)a.e.a1, a.e.a2*b.e.a3, 0));
 }
 
 // (A*alpha + beta)*B^t
@@ -2129,7 +2312,7 @@ operator * ( const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_ScaleAddS_<Mat> >, 
 {
     typedef MatExpr_Op4_<M, M, double, int, M, MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp((M)a.e.a1, (M)b.e.a1,
-        a.e.a2*b.e.a2, (M)b.e.a1, a.e.a3*b.e.a2, GEMM_2_T));
+                                     a.e.a2*b.e.a2, (M)b.e.a1, a.e.a3*b.e.a2, GEMM_2_T));
 }
 
 // A^t*(B*alpha + beta)
@@ -2140,7 +2323,7 @@ operator * ( const MatExpr_<MatExpr_Op2_<B, double, M, MatOp_T_<Mat> >, M>& a,
 {
     typedef MatExpr_Op4_<M, M, double, int, M, MatOp_MatMul_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp((M)a.e.a1, (M)b.e.a1,
-        a.e.a2*b.e.a2, (M)a.e.a1, a.e.a2*b.e.a3, GEMM_1_T));
+                                     a.e.a2*b.e.a2, (M)a.e.a1, a.e.a2*b.e.a3, GEMM_1_T));
 }
 
 // (A*B + C)*alpha
@@ -2151,7 +2334,7 @@ operator * ( const MatExpr_<MatExpr_Op6_<A, B, double, C,
 {
     typedef MatExpr_Op6_<A, B, double, C, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(a.e.a1, a.e.a2,
-        a.e.a3*alpha, a.e.a4, a.e.a5*alpha, a.e.a6));
+                                     a.e.a3*alpha, a.e.a4, a.e.a5*alpha, a.e.a6));
 }
 
 // alpha*(A*B + C)
@@ -2159,14 +2342,18 @@ template<typename A, typename B, typename C, typename M> static inline
 MatExpr_<MatExpr_Op6_<A, B, double, C, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator * ( double alpha, const MatExpr_<MatExpr_Op6_<A, B, double, C,
              double, int, M, MatOp_MatMulAdd_<Mat> >, M>& a )
-{ return a*alpha; }
+{
+    return a*alpha;
+}
 
 // -(A*B + C)
 template<typename A, typename B, typename C, typename M> static inline
 MatExpr_<MatExpr_Op6_<A, B, double, C, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator - ( const MatExpr_<MatExpr_Op6_<A, B, double, C,
              double, int, M, MatOp_MatMulAdd_<Mat> >, M>& a )
-{ return a*(-1); }
+{
+    return a*(-1);
+}
 
 
 // (A*B) + C
@@ -2177,7 +2364,7 @@ operator + ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, b, 1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, b, 1, a.e.a4));
 }
 
 // C + (A*B)
@@ -2185,7 +2372,9 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator + ( const M& b,
              const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat> >, M>& a )
-{ return a + b; }
+{
+    return a + b;
+}
 
 
 // (A*B) - C
@@ -2196,7 +2385,7 @@ operator - ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, b, -1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, b, -1, a.e.a4));
 }
 
 // C - (A*B)
@@ -2207,7 +2396,7 @@ operator - ( const M& b,
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, -a.e.a3, b, 1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, -a.e.a3, b, 1, a.e.a4));
 }
 
 
@@ -2219,7 +2408,7 @@ operator + ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b, 1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b, 1, a.e.a4));
 }
 
 // C + (A*B)
@@ -2227,7 +2416,9 @@ template<typename A, typename B, typename C, typename M> static inline
 MatExpr_<MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator + ( const MatExpr_<C, M>& b,
              const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat> >, M>& a )
-{ return a + b; }
+{
+    return a + b;
+}
 
 
 // (A*B) - C
@@ -2238,7 +2429,7 @@ operator - ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b, -1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b, -1, a.e.a4));
 }
 
 // C - (A*B)
@@ -2249,7 +2440,7 @@ operator - ( const MatExpr_<C, M>& b,
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b, 1, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b, 1, a.e.a4));
 }
 
 
@@ -2261,7 +2452,7 @@ operator + ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4));
 }
 
 // C*alpha + (A*B)
@@ -2269,7 +2460,9 @@ template<typename A, typename B, typename C, typename M> static inline
 MatExpr_<MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator + ( const MatExpr_<MatExpr_Op2_<C, double, M, MatOp_Scale_<Mat> >, M>& b,
              const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat> >, M>& a )
-{ return a + b; }
+{
+    return a + b;
+}
 
 
 // (A*B) - (C*alpha)
@@ -2280,7 +2473,7 @@ operator - ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, -b.e.a2, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, -b.e.a2, a.e.a4));
 }
 
 // (C*alpha) - (A*B)
@@ -2291,7 +2484,7 @@ operator - ( const MatExpr_<MatExpr_Op2_<C, double, M, MatOp_Scale_<Mat> >, M>& 
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4));
+                                         (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4));
 }
 
 
@@ -2303,7 +2496,7 @@ operator + ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4 + GEMM_3_T));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4 + GEMM_3_T));
 }
 
 // C^t + (A*B)
@@ -2311,7 +2504,9 @@ template<typename A, typename B, typename C, typename M> static inline
 MatExpr_<MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> >, M>
 operator + ( const MatExpr_<MatExpr_Op2_<C, double, M, MatOp_T_<Mat> >, M>& b,
              const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat> >, M>& a )
-{ return a + b; }
+{
+    return a + b;
+}
 
 
 // (A*B) - C^t
@@ -2322,7 +2517,7 @@ operator - ( const MatExpr_<MatExpr_Op4_<A, B, double, int, M, MatOp_MatMul_<Mat
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, -b.e.a2, a.e.a4+GEMM_3_T));
+                                         (M)a.e.a1, (M)a.e.a2, a.e.a3, (M)b.e.a1, -b.e.a2, a.e.a4+GEMM_3_T));
 }
 
 // C^t - (A*B)
@@ -2333,7 +2528,7 @@ operator - ( const MatExpr_<MatExpr_Op2_<C, double, M, MatOp_T_<Mat> >, M>& b,
 {
     typedef MatExpr_Op6_<M, M, double, M, double, int, M, MatOp_MatMulAdd_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, M>(MatExpr_Temp(
-        (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4+GEMM_3_T));
+                                         (M)a.e.a1, (M)a.e.a2, -a.e.a3, (M)b.e.a1, b.e.a2, a.e.a4+GEMM_3_T));
 }
 
 
@@ -2370,7 +2565,9 @@ static inline Mat& operator += (const Mat& a, const Scalar& s)
 }
 
 static inline Mat& operator -= (const Mat& a, const Scalar& s)
-{ return (a += -s); }
+{
+    return (a += -s);
+}
 
 template<typename _Tp> static inline
 Mat_<_Tp>& operator += (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
@@ -2409,15 +2606,21 @@ Mat_<_Tp>& operator -= (const Mat_<_Tp>& a, const Scalar& s)
 
 template<typename A, typename M> static inline
 M& operator += (const M& a, const MatExpr_<A, M>& b)
-{ return (a += (M)b); }
+{
+    return (a += (M)b);
+}
 
 template<typename A, typename M> static inline
 M& operator -= (const M& a, const MatExpr_<A, M>& b)
-{ return (a -= (M)b); }
+{
+    return (a -= (M)b);
+}
 
 template<typename A, typename M> static inline
 M& operator *= (const M& a, const MatExpr_<A, M>& b)
-{ return (a *= (M)b); }
+{
+    return (a *= (M)b);
+}
 
 template<typename A, typename M> static inline
 M& operator += (const M& a,
@@ -2525,81 +2728,99 @@ operator ^ (const Mat& a, const Mat& b)
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat,
-            MatOp_Bin_<Mat> >, Mat >
-operator & (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_Bin_<Mat> >, Mat >
+         operator & (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Mat, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, b, '&'));
+                                            a, b, '&'));
 }
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat,
-            MatOp_Bin_<Mat> >, Mat >
-operator | (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_Bin_<Mat> >, Mat >
+         operator | (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Mat, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, b, '|'));
+                                            a, b, '|'));
 }
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat,
-            MatOp_Bin_<Mat> >, Mat >
-operator ^ (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_Bin_<Mat> >, Mat >
+         operator ^ (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Mat, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, b, '^'));
+                                            a, b, '^'));
 }
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator & (const MatExpr_<A, M>& a, const MatExpr_<B, M>& b)
-{ return (M)a & (M)b; }
+{
+    return (M)a & (M)b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator & (const MatExpr_<A, M>& a, const M& b)
-{ return (M)a & b; }
+{
+    return (M)a & b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator & (const M& a, const MatExpr_<A, M>& b)
-{ return a & (M)b; }
+{
+    return a & (M)b;
+}
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator | (const MatExpr_<A, M>& a, const MatExpr_<B, M>& b)
-{ return (M)a | (M)b; }
+{
+    return (M)a | (M)b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator | (const MatExpr_<A, M>& a, const M& b)
-{ return (M)a | b; }
+{
+    return (M)a | b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator | (const M& a, const MatExpr_<A, M>& b)
-{ return a | (M)b; }
+{
+    return a | (M)b;
+}
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator ^ (const MatExpr_<A, M>& a, const MatExpr_<B, M>& b)
-{ return (M)a ^ (M)b; }
+{
+    return (M)a ^ (M)b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator ^ (const MatExpr_<A, M>& a, const M& b)
-{ return (M)a ^ b; }
+{
+    return (M)a ^ b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 operator ^ (const M& a, const MatExpr_<A, M>& b)
-{ return a ^ (M)b; }
+{
+    return a ^ (M)b;
+}
 
 static inline Mat& operator &= (const Mat& a, const Mat& b)
 {
@@ -2642,15 +2863,21 @@ operator ^= (const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 
 template<typename A, typename M> static inline M&
 operator &= (const M& a, const MatExpr_<A, M>& b)
-{ return (a &= (M)b); }
+{
+    return (a &= (M)b);
+}
 
 template<typename A, typename M> static inline M&
 operator |= (const M& a, const MatExpr_<A, M>& b)
-{ return (a |= (M)b); }
+{
+    return (a |= (M)b);
+}
 
 template<typename A, typename M> static inline M&
 operator ^= (const M& a, const MatExpr_<A, M>& b)
-{ return (a ^= (M)b); }
+{
+    return (a ^= (M)b);
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator & (const Mat& a, const Scalar& s)
@@ -2661,7 +2888,9 @@ operator & (const Mat& a, const Scalar& s)
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator & (const Scalar& s, const Mat& a)
-{ return a & s; }
+{
+    return a & s;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator | (const Mat& a, const Scalar& s)
@@ -2672,7 +2901,9 @@ operator | (const Mat& a, const Scalar& s)
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator | (const Scalar& s, const Mat& a)
-{ return a | s; }
+{
+    return a | s;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator ^ (const Mat& a, const Scalar& s)
@@ -2683,7 +2914,9 @@ operator ^ (const Mat& a, const Scalar& s)
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator ^ (const Scalar& s, const Mat& a)
-{ return a ^ s; }
+{
+    return a ^ s;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat>
 operator ~ (const Mat& a)
@@ -2703,7 +2936,9 @@ operator & (const Mat_<_Tp>& a, const Scalar& s)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
 operator & (const Scalar& s, const Mat_<_Tp>& a)
-{ return a & s; }
+{
+    return a & s;
+}
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
@@ -2716,7 +2951,9 @@ operator | (const Mat_<_Tp>& a, const Scalar& s)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
 operator | (const Scalar& s, const Mat_<_Tp>& a)
-{ return a | s; }
+{
+    return a | s;
+}
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
@@ -2729,7 +2966,9 @@ operator ^ (const Mat_<_Tp>& a, const Scalar& s)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
 operator ^ (const Scalar& s, const Mat_<_Tp>& a)
-{ return a ^ s; }
+{
+    return a ^ s;
+}
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat, MatOp_BinS_<Mat> >, Mat >
@@ -2742,37 +2981,51 @@ operator ~ (const Mat_<_Tp>& a)
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator & (const MatExpr_<A, M>& a, const Scalar& s)
-{ return (M)a & s; }
+{
+    return (M)a & s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator & (const Scalar& s, const MatExpr_<A, M>& a)
-{ return (M)a & s; }
+{
+    return (M)a & s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator | (const MatExpr_<A, M>& a, const Scalar& s)
-{ return (M)a | s; }
+{
+    return (M)a | s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator | (const Scalar& s, const MatExpr_<A, M>& a)
-{ return (M)a | s; }
+{
+    return (M)a | s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator ^ (const MatExpr_<A, M>& a, const Scalar& s)
-{ return (M)a ^ s; }
+{
+    return (M)a ^ s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator ^ (const Scalar& s, const MatExpr_<A, M>& a)
-{ return (M)a ^ s; }
+{
+    return (M)a ^ s;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, Scalar, int, M, MatOp_BinS_<Mat> >, M >
 operator ~ (const MatExpr_<A, M>& a)
-{ return ~(M)a; }
+{
+    return ~(M)a;
+}
 
 static inline Mat& operator &= (const Mat& a, const Scalar& s)
 {
@@ -2838,11 +3091,15 @@ operator > (const Mat& a, const Mat& b)
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat, MatOp_Cmp_<Mat> >, Mat>
 operator <= (const Mat& a, const Mat& b)
-{ return b >= a; }
+{
+    return b >= a;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat, MatOp_Cmp_<Mat> >, Mat>
 operator < (const Mat& a, const Mat& b)
-{ return b > a; }
+{
+    return b > a;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat, MatOp_Cmp_<Mat> >, Mat>
 operator != (const Mat& a, const Mat& b)
@@ -2895,27 +3152,39 @@ operator != (const Mat& a, double alpha)
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator == (double alpha, const Mat& a)
-{ return a == alpha; }
+{
+    return a == alpha;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator >= (double alpha, const Mat& a)
-{ return a <= alpha; }
+{
+    return a <= alpha;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator > (double alpha, const Mat& a)
-{ return a < alpha; }
+{
+    return a < alpha;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator <= (double alpha, const Mat& a)
-{ return a >= alpha; }
+{
+    return a >= alpha;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator < (double alpha, const Mat& a)
-{ return a > alpha; }
+{
+    return a > alpha;
+}
 
 static inline MatExpr_<MatExpr_Op3_<Mat, double, int, Mat, MatOp_CmpS_<Mat> >, Mat>
 operator != (double alpha, const Mat& a)
-{ return a != alpha; }
+{
+    return a != alpha;
+}
 
 /////////////////////////////// Miscellaneous operations //////////////////////////////
 
@@ -2946,58 +3215,66 @@ abs(const Mat& a)
 // max(A, B)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat,
-            MatOp_Bin_<Mat> >, Mat >
-max(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_Bin_<Mat> >, Mat >
+         max(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Mat, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, b, 'M'));
+                                            a, b, 'M'));
 }
 
 // min(A, B)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Mat, int, Mat,
-            MatOp_Bin_<Mat> >, Mat >
-min(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_Bin_<Mat> >, Mat >
+         min(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Mat, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, b, 'm'));
+                                            a, b, 'm'));
 }
 
 // abs(A)
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op3_<Mat, Scalar, int, Mat,
-            MatOp_BinS_<Mat> >, Mat >
-abs(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
+         MatOp_BinS_<Mat> >, Mat >
+         abs(const Mat_<_Tp>& a, const Mat_<_Tp>& b)
 {
     typedef MatExpr_Op3_<Mat, Scalar, int, Mat,
-        MatOp_Bin_<Mat> > MatExpr_Temp;
+            MatOp_Bin_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(
-        a, Scalar(0), 'a'));
+                                            a, Scalar(0), 'a'));
 }
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 max(const MatExpr_<A, M>& a, const M& b)
-{ return max((M)a, b); }
+{
+    return max((M)a, b);
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 max(const M& a, const MatExpr_<A, M>& b)
-{ return max(a, (M)b); }
+{
+    return max(a, (M)b);
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 min(const MatExpr_<A, M>& a, const M& b)
-{ return min((M)a, b); }
+{
+    return min((M)a, b);
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Bin_<Mat> >, M>
 min(const M& a, const MatExpr_<A, M>& b)
-{ return min(a, (M)b); }
+{
+    return min(a, (M)b);
+}
 
 // abs(A)
 template<typename A, typename B, typename M> static inline
@@ -3009,7 +3286,9 @@ abs(const MatExpr_<MatExpr_Op2_<A, B, M, MatOp_Sub_<Mat> >, M>& a)
 }
 
 template<typename _Tp> void merge(const Mat_<_Tp>* mvbegin, size_t count, Mat& dst)
-{ merge( (const Mat*)mvbegin, count, dst ); }
+{
+    merge( (const Mat*)mvbegin, count, dst );
+}
 
 static inline void split(const Mat& m, vector<Mat>& mv)
 {
@@ -3017,19 +3296,23 @@ static inline void split(const Mat& m, vector<Mat>& mv)
     if(m.channels() > 0)
         split(m, &mv[0]);
 }
-    
+
 template<typename _Tp> void split(const Mat& src, vector<Mat_<_Tp> >& mv)
-{ split(src, (vector<Mat>&)mv ); }
-    
+{
+    split(src, (vector<Mat>&)mv );
+}
+
 static inline void merge(const vector<Mat>& mv, Mat& dst)
-{ merge(&mv[0], mv.size(), dst); }
+{
+    merge(&mv[0], mv.size(), dst);
+}
 
 static inline void mixChannels(const vector<Mat>& src, vector<Mat>& dst,
                                const int* fromTo, int npairs)
 {
     mixChannels(&src[0], (int)src.size(), &dst[0], (int)dst.size(), fromTo, npairs);
 }
-    
+
 ///// Element-wise multiplication
 
 inline MatExpr_<MatExpr_Op4_<Mat, Mat, double, char, Mat, MatOp_MulDiv_<Mat> >, Mat>
@@ -3090,7 +3373,9 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator * (double alpha,
             const MatExpr_<MatExpr_Op4_<A, B, double, char, M, MatOp_MulDiv_<Mat> >, M>& a)
-{ return a*alpha; }
+{
+    return a*alpha;
+}
 
 
 ////// Element-wise division
@@ -3104,58 +3389,74 @@ operator / (const Mat& a, const Mat& b)
 
 template<typename _Tp> static inline
 MatExpr_<MatExpr_Op4_<Mat, Mat, double,
-char, Mat, MatOp_MulDiv_<Mat> >, Mat >
-operator / (const Mat& a, const Mat& b)
+         char, Mat, MatOp_MulDiv_<Mat> >, Mat >
+         operator / (const Mat& a, const Mat& b)
 {
     typedef MatExpr_Op4_<Mat, Mat, double,
-        char, Mat, MatOp_MulDiv_<Mat> > MatExpr_Temp;
+            char, Mat, MatOp_MulDiv_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat>(MatExpr_Temp(a, b, 1, '/'));
 }
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const MatExpr_<A, M>& a, const MatExpr_<B, M>& b)
-{ return (M)a/(M)b; }
+{
+    return (M)a/(M)b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const MatExpr_<A, M>& a, const M& b)
-{ return (M)a/b; }
+{
+    return (M)a/b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const M& a, const MatExpr_<A, M>& b)
-{ return a/(M)b; }
+{
+    return a/(M)b;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             const M& b)
-{ return ((M)a.e.a1/b)*a.e.a2; }
+{
+    return ((M)a.e.a1/b)*a.e.a2;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const M& a,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& b)
-{ return (a/(M)b.e.a1)*(1./b.e.a2); }
+{
+    return (a/(M)b.e.a1)*(1./b.e.a2);
+}
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a,
             const MatExpr_<MatExpr_Op2_<B, double, M, MatOp_Scale_<Mat> >, M>& b)
-{ return ((M)a.e.a1/(M)b.e.a1)*(a.e.a2/b.e.a2); }
+{
+    return ((M)a.e.a1/(M)b.e.a1)*(a.e.a2/b.e.a2);
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const M& a,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_DivRS_<Mat> >, M>& b)
-{ return a.mul((M)b.e.a1, 1./b.e.a2); }
+{
+    return a.mul((M)b.e.a1, 1./b.e.a2);
+}
 
 template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op4_<M, M, double, char, M, MatOp_MulDiv_<Mat> >, M>
 operator / (const MatExpr_<A, M>& a,
             const MatExpr_<MatExpr_Op2_<B, double, M, MatOp_DivRS_<Mat> >, M>& b)
-{ return ((M)a).mul((M)b.e.a1, 1./b.e.a2); }
+{
+    return ((M)a).mul((M)b.e.a1, 1./b.e.a2);
+}
 
 static inline
 MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_DivRS_<Mat> >, Mat >
@@ -3183,26 +3484,32 @@ MatExpr_<MatExpr_Op2_<Mat, double, Mat, MatOp_DivRS_<Mat> >, Mat >
 operator / (double alpha, const Mat_<_Tp>& a)
 {
     typedef MatExpr_Op2_<Mat, double, Mat,
-        MatOp_DivRS_<Mat> > MatExpr_Temp;
+            MatOp_DivRS_<Mat> > MatExpr_Temp;
     return MatExpr_<MatExpr_Temp, Mat >(MatExpr_Temp(a, alpha));
 }
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, double, M, MatOp_DivRS_<Mat> >, M>
 operator / (double alpha, const MatExpr_<A, M>& a)
-{ return alpha/(M)a; }
+{
+    return alpha/(M)a;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, double, M, MatOp_DivRS_<Mat> >, M>
 operator / (double alpha,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_Scale_<Mat> >, M>& a)
-{ return (alpha/a.e.a2)/(M)a.e.a1; }
+{
+    return (alpha/a.e.a2)/(M)a.e.a1;
+}
 
 template<typename A, typename M> static inline
 MatExpr_<MatExpr_Op2_<M, double, M, MatOp_Scale_<Mat> >, M>
 operator / (double alpha,
             const MatExpr_<MatExpr_Op2_<A, double, M, MatOp_DivRS_<Mat> >, M>& a)
-{ return (M)a.e.a1*(alpha/a.e.a2); }
+{
+    return (M)a.e.a1*(alpha/a.e.a2);
+}
 
 static inline Mat& operator /= (const Mat& a, const Mat& b)
 {
@@ -3256,7 +3563,9 @@ template<typename A, typename B, typename M> static inline
 MatExpr_<MatExpr_Op3_<M, M, int, M, MatOp_Solve_<Mat> >, M>
 operator * (const MatExpr_<MatExpr_Op2_<A, int, M, MatOp_Inv_<Mat> >, M>& a,
             const MatExpr_<B, M>& b)
-{ return a*(M)b; }
+{
+    return a*(M)b;
+}
 
 
 /////////////////////////////// Initialization ////////////////////////////////////////
@@ -3307,22 +3616,34 @@ static inline MatExpr_Initializer operator * (double alpha, MatExpr_Initializer&
 }
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::zeros(int rows, int cols)
-{ return Mat::zeros(rows, cols, DataType<_Tp>::type); }
+{
+    return Mat::zeros(rows, cols, DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::zeros(Size size)
-{ return Mat::zeros(size, DataType<_Tp>::type); }
+{
+    return Mat::zeros(size, DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::ones(int rows, int cols)
-{ return Mat::ones(rows, cols, DataType<_Tp>::type); }
+{
+    return Mat::ones(rows, cols, DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::ones(Size size)
-{ return Mat::ones(size, DataType<_Tp>::type); }
+{
+    return Mat::ones(size, DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::eye(int rows, int cols)
-{ return Mat::eye(rows, cols, DataType<_Tp>::type); }
+{
+    return Mat::eye(rows, cols, DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline MatExpr_Initializer Mat_<_Tp>::eye(Size size)
-{ return Mat::eye(size, DataType<_Tp>::type); }
+{
+    return Mat::eye(size, DataType<_Tp>::type);
+}
 
 
 //////////// Iterators & Comma initializers //////////////////
@@ -3334,20 +3655,18 @@ template<typename _Tp> inline MatConstIterator_<_Tp>::MatConstIterator_(const Ma
 {
     if( !_m )
         ptr = sliceEnd = 0;
-    else
-    {
+    else {
         ptr = (_Tp*)_m->data;
         sliceEnd = ptr + (_m->isContinuous() ? _m->rows*_m->cols : _m->cols);
     }
 }
 
 template<typename _Tp> inline MatConstIterator_<_Tp>::
-    MatConstIterator_(const Mat_<_Tp>* _m, int _row, int _col) : m(_m)
+MatConstIterator_(const Mat_<_Tp>* _m, int _row, int _col) : m(_m)
 {
     if( !_m )
         ptr = sliceEnd = 0;
-    else
-    {
+    else {
         CV_DbgAssert( (unsigned)_row < _m->rows && (unsigned)_col < _m->cols );
         ptr = (_Tp*)(_m->data + _m->step*_row);
         sliceEnd = _m->isContinuous() ? (_Tp*)_m->data + _m->rows*_m->cols : ptr + _m->cols;
@@ -3356,12 +3675,11 @@ template<typename _Tp> inline MatConstIterator_<_Tp>::
 }
 
 template<typename _Tp> inline MatConstIterator_<_Tp>::
-    MatConstIterator_(const Mat_<_Tp>* _m, Point _pt) : m(_m)
+MatConstIterator_(const Mat_<_Tp>* _m, Point _pt) : m(_m)
 {
     if( !_m )
         ptr = sliceEnd = 0;
-    else
-    {
+    else {
         CV_DbgAssert( (unsigned)_pt.y < (unsigned)_m->rows && (unsigned)_pt.x < (unsigned)_m->cols );
         ptr = (_Tp*)(_m->data + _m->step*_pt.y);
         sliceEnd = _m->isContinuous() ? (_Tp*)_m->data + _m->rows*_m->cols : ptr + _m->cols;
@@ -3370,42 +3688,42 @@ template<typename _Tp> inline MatConstIterator_<_Tp>::
 }
 
 template<typename _Tp> inline MatConstIterator_<_Tp>::
-    MatConstIterator_(const MatConstIterator_& it)
+MatConstIterator_(const MatConstIterator_& it)
     : m(it.m), ptr(it.ptr), sliceEnd(it.sliceEnd) {}
 
 template<typename _Tp> inline MatConstIterator_<_Tp>&
-    MatConstIterator_<_Tp>::operator = (const MatConstIterator_& it )
+MatConstIterator_<_Tp>::operator = (const MatConstIterator_& it )
 {
-    m = it.m; ptr = it.ptr; sliceEnd = it.sliceEnd;
+    m = it.m;
+    ptr = it.ptr;
+    sliceEnd = it.sliceEnd;
     return *this;
 }
 
-template<typename _Tp> inline _Tp MatConstIterator_<_Tp>::operator *() const { return *ptr; }
+template<typename _Tp> inline _Tp MatConstIterator_<_Tp>::operator *() const
+{
+    return *ptr;
+}
 
 template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::operator += (int ofs)
 {
     if( !m || ofs == 0 )
         return *this;
     ptr += ofs;
-    if( m->isContinuous() )
-    {
+    if( m->isContinuous() ) {
         if( ptr > sliceEnd )
             ptr = sliceEnd;
         else if( ptr < (_Tp*)m->data )
             ptr = (_Tp*)m->data;
-    }
-    else if( ptr >= sliceEnd || ptr < sliceEnd - m->cols )
-    {
+    } else if( ptr >= sliceEnd || ptr < sliceEnd - m->cols ) {
         ptr -= ofs;
         Point pt = pos();
         int cols = m->cols;
         ofs += pt.y*cols + pt.x;
-        if( ofs >= cols*m->rows )
-        {
-            ptr = sliceEnd = (_Tp*)(m->data + m->step*(m->rows-1)) + cols; 
-            return *this; 
-        }
-        else if( ofs < 0 )
+        if( ofs >= cols*m->rows ) {
+            ptr = sliceEnd = (_Tp*)(m->data + m->step*(m->rows-1)) + cols;
+            return *this;
+        } else if( ofs < 0 )
             ofs = 0;
         pt.y = ofs/cols;
         pt.x = ofs - pt.y*cols;
@@ -3417,10 +3735,14 @@ template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::op
 }
 
 template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::operator -= (int ofs)
-{ return (*this += -ofs); }
+{
+    return (*this += -ofs);
+}
 
 template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::operator --()
-{ return (*this += -1); }
+{
+    return (*this += -1);
+}
 
 template<typename _Tp> inline MatConstIterator_<_Tp> MatConstIterator_<_Tp>::operator --(int)
 {
@@ -3431,8 +3753,7 @@ template<typename _Tp> inline MatConstIterator_<_Tp> MatConstIterator_<_Tp>::ope
 
 template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::operator ++()
 {
-    if( m && ++ptr >= sliceEnd )
-    {
+    if( m && ++ptr >= sliceEnd ) {
         --ptr;
         *this += 1;
     }
@@ -3442,8 +3763,7 @@ template<typename _Tp> inline MatConstIterator_<_Tp>& MatConstIterator_<_Tp>::op
 template<typename _Tp> inline MatConstIterator_<_Tp> MatConstIterator_<_Tp>::operator ++(int)
 {
     MatConstIterator_ b = *this;
-    if( m && ++ptr >= sliceEnd )
-    {
+    if( m && ++ptr >= sliceEnd ) {
         --ptr;
         *this += 1;
     }
@@ -3454,14 +3774,11 @@ template<typename _Tp> inline Point MatConstIterator_<_Tp>::pos() const
 {
     if( !m )
         return Point();
-    if( m->isContinuous() )
-    {
+    if( m->isContinuous() ) {
         ptrdiff_t ofs = ptr - (_Tp*)m->data;
         int y = (int)(ofs / m->cols), x = (int)(ofs - (ptrdiff_t)y*m->cols);
         return Point(x, y);
-    }
-    else
-    {
+    } else {
         ptrdiff_t ofs = (uchar*)ptr - m->data;
         int y = (int)(ofs / m->step), x = (int)((ofs - y*m->step)/sizeof(_Tp));
         return Point(x, y);
@@ -3484,11 +3801,16 @@ template<typename _Tp> inline MatIterator_<_Tp>::MatIterator_(const MatIterator_
 
 template<typename _Tp> inline MatIterator_<_Tp>& MatIterator_<_Tp>::operator = (const MatIterator_<_Tp>& it )
 {
-    this->m = it.m; this->ptr = it.ptr; this->sliceEnd = it.sliceEnd;
+    this->m = it.m;
+    this->ptr = it.ptr;
+    this->sliceEnd = it.sliceEnd;
     return *this;
 }
 
-template<typename _Tp> inline _Tp& MatIterator_<_Tp>::operator *() const { return *(this->ptr); }
+template<typename _Tp> inline _Tp& MatIterator_<_Tp>::operator *() const
+{
+    return *(this->ptr);
+}
 
 template<typename _Tp> inline MatIterator_<_Tp>& MatIterator_<_Tp>::operator += (int ofs)
 {
@@ -3517,8 +3839,7 @@ template<typename _Tp> inline MatIterator_<_Tp> MatIterator_<_Tp>::operator --(i
 
 template<typename _Tp> inline MatIterator_<_Tp>& MatIterator_<_Tp>::operator ++()
 {
-    if( this->m && ++this->ptr >= this->sliceEnd )
-    {
+    if( this->m && ++this->ptr >= this->sliceEnd ) {
         --this->ptr;
         MatConstIterator_<_Tp>::operator += (1);
     }
@@ -3528,8 +3849,7 @@ template<typename _Tp> inline MatIterator_<_Tp>& MatIterator_<_Tp>::operator ++(
 template<typename _Tp> inline MatIterator_<_Tp> MatIterator_<_Tp>::operator ++(int)
 {
     MatIterator_ b = *this;
-    if( this->m && ++this->ptr >= this->sliceEnd )
-    {
+    if( this->m && ++this->ptr >= this->sliceEnd ) {
         --this->ptr;
         MatConstIterator_<_Tp>::operator += (1);
     }
@@ -3538,27 +3858,39 @@ template<typename _Tp> inline MatIterator_<_Tp> MatIterator_<_Tp>::operator ++(i
 
 template<typename _Tp> static inline bool
 operator == (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return a.m == b.m && a.ptr == b.ptr; }
+{
+    return a.m == b.m && a.ptr == b.ptr;
+}
 
 template<typename _Tp> static inline bool
 operator != (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return !(a == b); }
+{
+    return !(a == b);
+}
 
 template<typename _Tp> static inline bool
 operator < (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return a.ptr < b.ptr; }
+{
+    return a.ptr < b.ptr;
+}
 
 template<typename _Tp> static inline bool
 operator > (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return a.ptr > b.ptr; }
+{
+    return a.ptr > b.ptr;
+}
 
 template<typename _Tp> static inline bool
 operator <= (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return a.ptr <= b.ptr; }
+{
+    return a.ptr <= b.ptr;
+}
 
 template<typename _Tp> static inline bool
 operator >= (const MatConstIterator_<_Tp>& a, const MatConstIterator_<_Tp>& b)
-{ return a.ptr >= b.ptr; }
+{
+    return a.ptr >= b.ptr;
+}
 
 template<typename _Tp> static inline int
 operator - (const MatConstIterator_<_Tp>& b, const MatConstIterator_<_Tp>& a)
@@ -3579,53 +3911,82 @@ operator - (const MatConstIterator_<_Tp>& b, const MatConstIterator_<_Tp>& a)
 
 template<typename _Tp> static inline MatConstIterator_<_Tp>
 operator + (const MatConstIterator_<_Tp>& a, int ofs)
-{ MatConstIterator_<_Tp> b = a; return b += ofs; }
+{
+    MatConstIterator_<_Tp> b = a;
+    return b += ofs;
+}
 
 template<typename _Tp> static inline MatConstIterator_<_Tp>
 operator + (int ofs, const MatConstIterator_<_Tp>& a)
-{ MatConstIterator_<_Tp> b = a; return b += ofs; }
+{
+    MatConstIterator_<_Tp> b = a;
+    return b += ofs;
+}
 
 template<typename _Tp> static inline MatConstIterator_<_Tp>
 operator - (const MatConstIterator_<_Tp>& a, int ofs)
-{ MatConstIterator_<_Tp> b = a; return b += -ofs; }
+{
+    MatConstIterator_<_Tp> b = a;
+    return b += -ofs;
+}
 
 template<typename _Tp> inline _Tp MatConstIterator_<_Tp>::operator [](int i) const
-{ return *(*this + i); }
+{
+    return *(*this + i);
+}
 
 template<typename _Tp> static inline MatIterator_<_Tp>
 operator + (const MatIterator_<_Tp>& a, int ofs)
-{ MatIterator_<_Tp> b = a; return b += ofs; }
+{
+    MatIterator_<_Tp> b = a;
+    return b += ofs;
+}
 
 template<typename _Tp> static inline MatIterator_<_Tp>
 operator + (int ofs, const MatIterator_<_Tp>& a)
-{ MatIterator_<_Tp> b = a; return b += ofs; }
+{
+    MatIterator_<_Tp> b = a;
+    return b += ofs;
+}
 
 template<typename _Tp> static inline MatIterator_<_Tp>
 operator - (const MatIterator_<_Tp>& a, int ofs)
-{ MatIterator_<_Tp> b = a; return b += -ofs; }
+{
+    MatIterator_<_Tp> b = a;
+    return b += -ofs;
+}
 
 template<typename _Tp> inline _Tp& MatIterator_<_Tp>::operator [](int i) const
-{ return *(*this + i); }
+{
+    return *(*this + i);
+}
 
 template<typename _Tp> inline MatConstIterator_<_Tp> Mat_<_Tp>::begin() const
-{ return Mat::begin<_Tp>(); }
+{
+    return Mat::begin<_Tp>();
+}
 
 template<typename _Tp> inline MatConstIterator_<_Tp> Mat_<_Tp>::end() const
-{ return Mat::end<_Tp>(); }
+{
+    return Mat::end<_Tp>();
+}
 
 template<typename _Tp> inline MatIterator_<_Tp> Mat_<_Tp>::begin()
-{ return Mat::begin<_Tp>(); }
+{
+    return Mat::begin<_Tp>();
+}
 
 template<typename _Tp> inline MatIterator_<_Tp> Mat_<_Tp>::end()
-{ return Mat::end<_Tp>(); }
+{
+    return Mat::end<_Tp>();
+}
 
 template<typename _Tp> class CV_EXPORTS MatOp_Iter_
 {
-public:    
+public:
     MatOp_Iter_() {}
 
-    static void apply(const MatIterator_<_Tp>& a, Mat& c, int type=-1)
-    {
+    static void apply(const MatIterator_<_Tp>& a, Mat& c, int type=-1) {
         if( type < 0 )
             c = *a.m;
         else
@@ -3635,13 +3996,14 @@ public:
 
 template<typename _Tp> inline MatCommaInitializer_<_Tp>::MatCommaInitializer_(Mat_<_Tp>* _m) :
     MatExpr_<MatExpr_Op1_<MatIterator_<_Tp>, Mat_<_Tp>,
-        MatOp_Iter_<_Tp> >, Mat_<_Tp> >(MatIterator_<_Tp>(_m)) {}
+    MatOp_Iter_<_Tp> >, Mat_<_Tp> >(MatIterator_<_Tp>(_m)) {}
 
 template<typename _Tp> template<typename T2> inline MatCommaInitializer_<_Tp>&
 MatCommaInitializer_<_Tp>::operator , (T2 v)
 {
     CV_DbgAssert( this->e.a1 < this->e.a1.m->end() );
-    *this->e.a1 = _Tp(v); ++this->e.a1;
+    *this->e.a1 = _Tp(v);
+    ++this->e.a1;
     return *this;
 }
 
@@ -3673,30 +4035,29 @@ operator << (const Mat_<_Tp>& m, T2 val)
 //////////////////////////////// MatND ////////////////////////////////
 
 inline MatND::MatND()
- : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
+    : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
 {
 }
 
 inline MatND::MatND(int _dims, const int* _sizes, int _type)
- : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
+    : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
 {
     create(_dims, _sizes, _type);
 }
 
 inline MatND::MatND(int _dims, const int* _sizes, int _type, const Scalar& _s)
- : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
+    : flags(MAGIC_VAL), dims(0), refcount(0), data(0), datastart(0), dataend(0)
 {
     create(_dims, _sizes, _type);
     *this = _s;
 }
 
 inline MatND::MatND(const MatND& m)
- : flags(m.flags), dims(m.dims), refcount(m.refcount),
- data(m.data), datastart(m.datastart), dataend(m.dataend)
+    : flags(m.flags), dims(m.dims), refcount(m.refcount),
+      data(m.data), datastart(m.datastart), dataend(m.dataend)
 {
     int i, d = dims;
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         size[i] = m.size[i];
         step[i] = m.step[i];
     }
@@ -3705,11 +4066,13 @@ inline MatND::MatND(const MatND& m)
 }
 
 inline MatND::MatND(const Mat& m)
- : flags(m.flags), dims(2), refcount(m.refcount),
-   data(m.data), datastart(m.datastart), dataend(m.dataend)
+    : flags(m.flags), dims(2), refcount(m.refcount),
+      data(m.data), datastart(m.datastart), dataend(m.dataend)
 {
-    size[0] = m.rows; size[1] = m.cols;
-    step[0] = m.step; step[1] = m.elemSize();
+    size[0] = m.rows;
+    size[1] = m.cols;
+    step[0] = m.step;
+    step[1] = m.elemSize();
     if( refcount )
         CV_XADD(refcount, 1);
 }
@@ -3724,30 +4087,30 @@ static inline MatND cvarrToMatND(const CvArr* arr, bool copyData=false, int coiM
 }
 
 inline MatND::MatND(const CvMatND* m, bool copyData)
-  : flags(MAGIC_VAL|(m->type & (CV_MAT_TYPE_MASK|CV_MAT_CONT_FLAG))),
-  dims(m->dims), refcount(0), data(m->data.ptr)
+    : flags(MAGIC_VAL|(m->type & (CV_MAT_TYPE_MASK|CV_MAT_CONT_FLAG))),
+      dims(m->dims), refcount(0), data(m->data.ptr)
 {
     int i, d = dims;
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         size[i] = m->dim[i].size;
         step[i] = m->dim[i].step;
     }
     datastart = data;
     dataend = datastart + size[0]*step[0];
-    if( copyData )
-    {
+    if( copyData ) {
         MatND temp(*this);
         temp.copyTo(*this);
     }
 }
 
-inline MatND::~MatND() { release(); }
+inline MatND::~MatND()
+{
+    release();
+}
 
 inline MatND& MatND::operator = (const MatND& m)
 {
-    if( this != &m )
-    {
+    if( this != &m ) {
         if( m.refcount )
             CV_XADD(m.refcount, 1);
         release();
@@ -3758,8 +4121,7 @@ inline MatND& MatND::operator = (const MatND& m)
         dataend = m.dataend;
         refcount = m.refcount;
         int i, d = dims;
-        for( i = 0; i < d; i++ )
-        {
+        for( i = 0; i < d; i++ ) {
             size[i] = m.size[i];
             step[i] = m.step[i];
         }
@@ -3801,61 +4163,82 @@ inline void MatND::release()
     refcount = 0;
 }
 
-inline bool MatND::isContinuous() const { return (flags & CONTINUOUS_FLAG) != 0; }
-inline size_t MatND::elemSize() const { return getElemSize(flags); }
-inline size_t MatND::elemSize1() const { return CV_ELEM_SIZE1(flags); }
-inline int MatND::type() const { return CV_MAT_TYPE(flags); }
-inline int MatND::depth() const { return CV_MAT_DEPTH(flags); }
-inline int MatND::channels() const { return CV_MAT_CN(flags); }
+inline bool MatND::isContinuous() const
+{
+    return (flags & CONTINUOUS_FLAG) != 0;
+}
+inline size_t MatND::elemSize() const
+{
+    return getElemSize(flags);
+}
+inline size_t MatND::elemSize1() const
+{
+    return CV_ELEM_SIZE1(flags);
+}
+inline int MatND::type() const
+{
+    return CV_MAT_TYPE(flags);
+}
+inline int MatND::depth() const
+{
+    return CV_MAT_DEPTH(flags);
+}
+inline int MatND::channels() const
+{
+    return CV_MAT_CN(flags);
+}
 
 inline size_t MatND::step1(int i) const
-{ CV_DbgAssert((unsigned)i < (unsigned)dims); return step[i]/elemSize1(); }
+{
+    CV_DbgAssert((unsigned)i < (unsigned)dims);
+    return step[i]/elemSize1();
+}
 
 inline uchar* MatND::ptr(int i0)
 {
     CV_DbgAssert( dims == 1 && data &&
-        (unsigned)i0 < (unsigned)size[0] );
+                  (unsigned)i0 < (unsigned)size[0] );
     return data + i0*step[0];
 }
 
 inline const uchar* MatND::ptr(int i0) const
 {
     CV_DbgAssert( dims == 1 && data &&
-        (unsigned)i0 < (unsigned)size[0] );
+                  (unsigned)i0 < (unsigned)size[0] );
     return data + i0*step[0];
 }
 
 inline uchar* MatND::ptr(int i0, int i1)
 {
     CV_DbgAssert( dims == 2 && data &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] );
     return data + i0*step[0] + i1*step[1];
 }
 
 inline const uchar* MatND::ptr(int i0, int i1) const
 {
     CV_DbgAssert( dims == 2 && data &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] );
     return data + i0*step[0] + i1*step[1];
 }
 
 inline uchar* MatND::ptr(int i0, int i1, int i2)
 {
     CV_DbgAssert( dims == 3 && data &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] &&
-        (unsigned)i2 < (unsigned)size[2] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] &&
+                  (unsigned)i2 < (unsigned)size[2] );
     return data + i0*step[0] + i1*step[1] + i2*step[2];
 }
 
 inline const uchar* MatND::ptr(int i0, int i1, int i2) const
 {
     CV_DbgAssert( dims == 3 && data &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] &&
-        (unsigned)i2 < (unsigned)size[2] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] &&
+                  (unsigned)i2 < (unsigned)size[2] );
     return data + i0*step[0] + i1*step[1] + i2*step[2];
 }
 
@@ -3864,8 +4247,7 @@ inline uchar* MatND::ptr(const int* idx)
     int i, d = dims;
     uchar* p = data;
     CV_DbgAssert( data );
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         CV_DbgAssert( (unsigned)idx[i] < (unsigned)size[i] );
         p += idx[i]*step[i];
     }
@@ -3877,8 +4259,7 @@ inline const uchar* MatND::ptr(const int* idx) const
     int i, d = dims;
     uchar* p = data;
     CV_DbgAssert( data );
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         CV_DbgAssert( (unsigned)idx[i] < (unsigned)size[i] );
         p += idx[i]*step[i];
     }
@@ -3886,21 +4267,37 @@ inline const uchar* MatND::ptr(const int* idx) const
 }
 
 template<typename _Tp> inline _Tp& MatND::at(int i0)
-{ return *(_Tp*)ptr(i0); }
+{
+    return *(_Tp*)ptr(i0);
+}
 template<typename _Tp> inline const _Tp& MatND::at(int i0) const
-{ return *(const _Tp*)ptr(i0); }
+{
+    return *(const _Tp*)ptr(i0);
+}
 template<typename _Tp> inline _Tp& MatND::at(int i0, int i1)
-{ return *(_Tp*)ptr(i0, i1); }
+{
+    return *(_Tp*)ptr(i0, i1);
+}
 template<typename _Tp> inline const _Tp& MatND::at(int i0, int i1) const
-{ return *(const _Tp*)ptr(i0, i1); }
+{
+    return *(const _Tp*)ptr(i0, i1);
+}
 template<typename _Tp> inline _Tp& MatND::at(int i0, int i1, int i2)
-{ return *(_Tp*)ptr(i0, i1, i2); }
+{
+    return *(_Tp*)ptr(i0, i1, i2);
+}
 template<typename _Tp> inline const _Tp& MatND::at(int i0, int i1, int i2) const
-{ return *(const _Tp*)ptr(i0, i1, i2); }
+{
+    return *(const _Tp*)ptr(i0, i1, i2);
+}
 template<typename _Tp> inline _Tp& MatND::at(const int* idx)
-{ return *(_Tp*)ptr(idx); }
+{
+    return *(_Tp*)ptr(idx);
+}
 template<typename _Tp> inline const _Tp& MatND::at(const int* idx) const
-{ return *(const _Tp*)ptr(idx); }
+{
+    return *(const _Tp*)ptr(idx);
+}
 
 inline NAryMatNDIterator::NAryMatNDIterator()
 {
@@ -3918,12 +4315,12 @@ template<typename _Tp> inline MatND_<_Tp>::MatND_()
 }
 
 template<typename _Tp> inline MatND_<_Tp>::MatND_(int _dims, const int* _sizes)
-: MatND(_dims, _sizes, DataType<_Tp>::type)
+    : MatND(_dims, _sizes, DataType<_Tp>::type)
 {
 }
 
 template<typename _Tp> inline MatND_<_Tp>::MatND_(int _dims, const int* _sizes, const _Tp& _s)
-: MatND(_dims, _sizes, DataType<_Tp>::type, Scalar(_s))
+    : MatND(_dims, _sizes, DataType<_Tp>::type, Scalar(_s))
 {
 }
 
@@ -3940,7 +4337,7 @@ template<typename _Tp> inline MatND_<_Tp>::MatND_(const MatND_<_Tp>& m) : MatND(
 }
 
 template<typename _Tp> inline MatND_<_Tp>::MatND_(const MatND_<_Tp>& m, const Range* ranges)
-: MatND(m, ranges)
+    : MatND(m, ranges)
 {
 }
 
@@ -3951,13 +4348,11 @@ template<typename _Tp> inline MatND_<_Tp>::MatND_(const CvMatND* m, bool copyDat
 
 template<typename _Tp> inline MatND_<_Tp>& MatND_<_Tp>::operator = (const MatND& m)
 {
-    if( DataType<_Tp>::type == m.type() )
-    {
+    if( DataType<_Tp>::type == m.type() ) {
         Mat::operator = (m);
         return *this;
     }
-    if( DataType<_Tp>::depth == m.depth() )
-    {
+    if( DataType<_Tp>::depth == m.depth() ) {
         return (*this = m.reshape(DataType<_Tp>::channels));
     }
     CV_DbgAssert(DataType<_Tp>::channels == m.channels());
@@ -3994,22 +4389,34 @@ template<typename _Tp> inline MatND_<_Tp> MatND_<_Tp>::clone() const
 
 template<typename _Tp> inline MatND_<_Tp>
 MatND_<_Tp>::operator()(const Range* ranges) const
-{ return MatND_<_Tp>(*this, ranges); }
+{
+    return MatND_<_Tp>(*this, ranges);
+}
 
 template<typename _Tp> inline size_t MatND_<_Tp>::elemSize() const
-{ return CV_ELEM_SIZE(DataType<_Tp>::type); }
+{
+    return CV_ELEM_SIZE(DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline size_t MatND_<_Tp>::elemSize1() const
-{ return CV_ELEM_SIZE1(DataType<_Tp>::type); }
+{
+    return CV_ELEM_SIZE1(DataType<_Tp>::type);
+}
 
 template<typename _Tp> inline int MatND_<_Tp>::type() const
-{ return DataType<_Tp>::type; }
+{
+    return DataType<_Tp>::type;
+}
 
 template<typename _Tp> inline int MatND_<_Tp>::depth() const
-{ return DataType<_Tp>::depth; }
+{
+    return DataType<_Tp>::depth;
+}
 
 template<typename _Tp> inline int MatND_<_Tp>::channels() const
-{ return DataType<_Tp>::channels; }
+{
+    return DataType<_Tp>::channels;
+}
 
 template<typename _Tp> inline size_t MatND_<_Tp>::stepT(int i) const
 {
@@ -4027,8 +4434,7 @@ template<typename _Tp> inline _Tp& MatND_<_Tp>::operator ()(const int* idx)
 {
     uchar* ptr = data;
     int i, d = dims;
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         int ii = idx[i];
         CV_DbgAssert( (unsigned)ii < (unsigned)size[i] );
         ptr += ii*step[i];
@@ -4040,8 +4446,7 @@ template<typename _Tp> inline const _Tp& MatND_<_Tp>::operator ()(const int* idx
 {
     const uchar* ptr = data;
     int i, d = dims;
-    for( i = 0; i < d; i++ )
-    {
+    for( i = 0; i < d; i++ ) {
         int ii = idx[i];
         CV_DbgAssert( (unsigned)ii < (unsigned)size[i] );
         ptr += ii*step[i];
@@ -4052,45 +4457,45 @@ template<typename _Tp> inline const _Tp& MatND_<_Tp>::operator ()(const int* idx
 template<typename _Tp> inline _Tp& MatND_<_Tp>::operator ()(int i0)
 {
     CV_DbgAssert( dims == 1 &&
-                 (unsigned)i0 < (unsigned)size[0] );
-    
+                  (unsigned)i0 < (unsigned)size[0] );
+
     return *(_Tp*)(data + i0*step[0]);
 }
 
 template<typename _Tp> inline const _Tp& MatND_<_Tp>::operator ()(int i0) const
 {
     CV_DbgAssert( dims == 1 &&
-                 (unsigned)i0 < (unsigned)size[0] );
-    
+                  (unsigned)i0 < (unsigned)size[0] );
+
     return *(const _Tp*)(data + i0*step[0]);
 }
-    
-    
+
+
 template<typename _Tp> inline _Tp& MatND_<_Tp>::operator ()(int i0, int i1)
 {
     CV_DbgAssert( dims == 2 &&
-                 (unsigned)i0 < (unsigned)size[0] &&
-                 (unsigned)i1 < (unsigned)size[1] );
-    
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] );
+
     return *(_Tp*)(data + i0*step[0] + i1*step[1]);
 }
 
 template<typename _Tp> inline const _Tp& MatND_<_Tp>::operator ()(int i0, int i1) const
 {
     CV_DbgAssert( dims == 2 &&
-                 (unsigned)i0 < (unsigned)size[0] &&
-                 (unsigned)i1 < (unsigned)size[1] );
-    
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] );
+
     return *(const _Tp*)(data + i0*step[0] + i1*step[1]);
 }
-    
-    
+
+
 template<typename _Tp> inline _Tp& MatND_<_Tp>::operator ()(int i0, int i1, int i2)
 {
     CV_DbgAssert( dims == 3 &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] &&
-        (unsigned)i2 < (unsigned)size[2] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] &&
+                  (unsigned)i2 < (unsigned)size[2] );
 
     return *(_Tp*)(data + i0*step[0] + i1*step[1] + i2*step[2]);
 }
@@ -4098,19 +4503,19 @@ template<typename _Tp> inline _Tp& MatND_<_Tp>::operator ()(int i0, int i1, int 
 template<typename _Tp> inline const _Tp& MatND_<_Tp>::operator ()(int i0, int i1, int i2) const
 {
     CV_DbgAssert( dims == 3 &&
-        (unsigned)i0 < (unsigned)size[0] &&
-        (unsigned)i1 < (unsigned)size[1] &&
-        (unsigned)i2 < (unsigned)size[2] );
+                  (unsigned)i0 < (unsigned)size[0] &&
+                  (unsigned)i1 < (unsigned)size[1] &&
+                  (unsigned)i2 < (unsigned)size[2] );
 
     return *(const _Tp*)(data + i0*step[0] + i1*step[1] + i2*step[2]);
 }
 
-    
+
 static inline void merge(const vector<MatND>& mv, MatND& dst)
 {
     merge(&mv[0], mv.size(), dst);
 }
-    
+
 static inline void split(const MatND& m, vector<MatND>& mv)
 {
     mv.resize(m.channels());
@@ -4122,23 +4527,23 @@ static inline void mixChannels(const vector<MatND>& src, vector<MatND>& dst,
                                const int* fromTo, int npairs)
 {
     mixChannels(&src[0], (int)src.size(), &dst[0], (int)dst.size(), fromTo, npairs);
-}   
+}
 
 //////////////////////////////// SparseMat ////////////////////////////////
 
 inline SparseMat::SparseMat()
-: flags(MAGIC_VAL), hdr(0)
+    : flags(MAGIC_VAL), hdr(0)
 {
 }
 
 inline SparseMat::SparseMat(int _dims, const int* _sizes, int _type)
-: flags(MAGIC_VAL), hdr(0)
+    : flags(MAGIC_VAL), hdr(0)
 {
     create(_dims, _sizes, _type);
 }
 
 inline SparseMat::SparseMat(const SparseMat& m)
-: flags(m.flags), hdr(m.hdr)
+    : flags(m.flags), hdr(m.hdr)
 {
     addref();
 }
@@ -4150,8 +4555,7 @@ inline SparseMat::~SparseMat()
 
 inline SparseMat& SparseMat::operator = (const SparseMat& m)
 {
-    if( this != &m )
-    {
+    if( this != &m ) {
         if( m.hdr )
             CV_XADD(&m.hdr->refcount, 1);
         release();
@@ -4162,10 +4566,14 @@ inline SparseMat& SparseMat::operator = (const SparseMat& m)
 }
 
 inline SparseMat& SparseMat::operator = (const Mat& m)
-{ return (*this = SparseMat(m)); }
+{
+    return (*this = SparseMat(m));
+}
 
 inline SparseMat& SparseMat::operator = (const MatND& m)
-{ return (*this = SparseMat(m)); }
+{
+    return (*this = SparseMat(m));
+}
 
 inline SparseMat SparseMat::clone() const
 {
@@ -4184,7 +4592,9 @@ inline void SparseMat::assignTo( SparseMat& m, int type ) const
 }
 
 inline void SparseMat::addref()
-{ if( hdr ) CV_XADD(&hdr->refcount, 1); }
+{
+    if( hdr ) CV_XADD(&hdr->refcount, 1);
+}
 
 inline void SparseMat::release()
 {
@@ -4194,19 +4604,29 @@ inline void SparseMat::release()
 }
 
 inline size_t SparseMat::elemSize() const
-{ return CV_ELEM_SIZE(flags); }
+{
+    return CV_ELEM_SIZE(flags);
+}
 
 inline size_t SparseMat::elemSize1() const
-{ return CV_ELEM_SIZE1(flags); }
+{
+    return CV_ELEM_SIZE1(flags);
+}
 
 inline int SparseMat::type() const
-{ return CV_MAT_TYPE(flags); }
+{
+    return CV_MAT_TYPE(flags);
+}
 
 inline int SparseMat::depth() const
-{ return CV_MAT_DEPTH(flags); }
+{
+    return CV_MAT_DEPTH(flags);
+}
 
 inline int SparseMat::channels() const
-{ return CV_MAT_CN(flags); }
+{
+    return CV_MAT_CN(flags);
+}
 
 inline const int* SparseMat::size() const
 {
@@ -4215,8 +4635,7 @@ inline const int* SparseMat::size() const
 
 inline int SparseMat::size(int i) const
 {
-    if( hdr )
-    {
+    if( hdr ) {
         CV_DbgAssert((unsigned)i < (unsigned)hdr->dims);
         return hdr->size[i];
     }
@@ -4260,23 +4679,31 @@ inline size_t SparseMat::hash(const int* idx) const
 }
 
 template<typename _Tp> inline _Tp& SparseMat::ref(int i0, size_t* hashval)
-{ return *(_Tp*)((SparseMat*)this)->ptr(i0, true, hashval); }
-    
+{
+    return *(_Tp*)((SparseMat*)this)->ptr(i0, true, hashval);
+}
+
 template<typename _Tp> inline _Tp& SparseMat::ref(int i0, int i1, size_t* hashval)
-{ return *(_Tp*)((SparseMat*)this)->ptr(i0, i1, true, hashval); }
+{
+    return *(_Tp*)((SparseMat*)this)->ptr(i0, i1, true, hashval);
+}
 
 template<typename _Tp> inline _Tp& SparseMat::ref(int i0, int i1, int i2, size_t* hashval)
-{ return *(_Tp*)((SparseMat*)this)->ptr(i0, i1, i2, true, hashval); }
+{
+    return *(_Tp*)((SparseMat*)this)->ptr(i0, i1, i2, true, hashval);
+}
 
 template<typename _Tp> inline _Tp& SparseMat::ref(const int* idx, size_t* hashval)
-{ return *(_Tp*)((SparseMat*)this)->ptr(idx, true, hashval); }
+{
+    return *(_Tp*)((SparseMat*)this)->ptr(idx, true, hashval);
+}
 
 template<typename _Tp> inline _Tp SparseMat::value(int i0, size_t* hashval) const
 {
     const _Tp* p = (const _Tp*)((SparseMat*)this)->ptr(i0, false, hashval);
     return p ? *p : _Tp();
-}    
-    
+}
+
 template<typename _Tp> inline _Tp SparseMat::value(int i0, int i1, size_t* hashval) const
 {
     const _Tp* p = (const _Tp*)((SparseMat*)this)->ptr(i0, i1, false, hashval);
@@ -4296,75 +4723,118 @@ template<typename _Tp> inline _Tp SparseMat::value(const int* idx, size_t* hashv
 }
 
 template<typename _Tp> inline const _Tp* SparseMat::find(int i0, size_t* hashval) const
-{ return (const _Tp*)((SparseMat*)this)->ptr(i0, false, hashval); }
-    
+{
+    return (const _Tp*)((SparseMat*)this)->ptr(i0, false, hashval);
+}
+
 template<typename _Tp> inline const _Tp* SparseMat::find(int i0, int i1, size_t* hashval) const
-{ return (const _Tp*)((SparseMat*)this)->ptr(i0, i1, false, hashval); }
+{
+    return (const _Tp*)((SparseMat*)this)->ptr(i0, i1, false, hashval);
+}
 
 template<typename _Tp> inline const _Tp* SparseMat::find(int i0, int i1, int i2, size_t* hashval) const
-{ return (const _Tp*)((SparseMat*)this)->ptr(i0, i1, i2, false, hashval); }
+{
+    return (const _Tp*)((SparseMat*)this)->ptr(i0, i1, i2, false, hashval);
+}
 
 template<typename _Tp> inline const _Tp* SparseMat::find(const int* idx, size_t* hashval) const
-{ return (const _Tp*)((SparseMat*)this)->ptr(idx, false, hashval); }
+{
+    return (const _Tp*)((SparseMat*)this)->ptr(idx, false, hashval);
+}
 
 template<typename _Tp> inline _Tp& SparseMat::value(Node* n)
-{ return *(_Tp*)((uchar*)n + hdr->valueOffset); }
+{
+    return *(_Tp*)((uchar*)n + hdr->valueOffset);
+}
 
 template<typename _Tp> inline const _Tp& SparseMat::value(const Node* n) const
-{ return *(const _Tp*)((const uchar*)n + hdr->valueOffset); }
+{
+    return *(const _Tp*)((const uchar*)n + hdr->valueOffset);
+}
 
 inline SparseMat::Node* SparseMat::node(size_t nidx)
-{ return (Node*)&hdr->pool[nidx]; }
+{
+    return (Node*)&hdr->pool[nidx];
+}
 
 inline const SparseMat::Node* SparseMat::node(size_t nidx) const
-{ return (const Node*)&hdr->pool[nidx]; }
+{
+    return (const Node*)&hdr->pool[nidx];
+}
 
 inline SparseMatIterator SparseMat::begin()
-{ return SparseMatIterator(this); }
+{
+    return SparseMatIterator(this);
+}
 
 inline SparseMatConstIterator SparseMat::begin() const
-{ return SparseMatConstIterator(this); }
+{
+    return SparseMatConstIterator(this);
+}
 
 inline SparseMatIterator SparseMat::end()
-{ SparseMatIterator it(this); it.seekEnd(); return it; }
-    
+{
+    SparseMatIterator it(this);
+    it.seekEnd();
+    return it;
+}
+
 inline SparseMatConstIterator SparseMat::end() const
-{ SparseMatConstIterator it(this); it.seekEnd(); return it; }
-    
+{
+    SparseMatConstIterator it(this);
+    it.seekEnd();
+    return it;
+}
+
 template<typename _Tp> inline SparseMatIterator_<_Tp> SparseMat::begin()
-{ return SparseMatIterator_<_Tp>(this); }
-    
+{
+    return SparseMatIterator_<_Tp>(this);
+}
+
 template<typename _Tp> inline SparseMatConstIterator_<_Tp> SparseMat::begin() const
-{ return SparseMatConstIterator_<_Tp>(this); }
-    
+{
+    return SparseMatConstIterator_<_Tp>(this);
+}
+
 template<typename _Tp> inline SparseMatIterator_<_Tp> SparseMat::end()
-{ SparseMatIterator_<_Tp> it(this); it.seekEnd(); return it; }
+{
+    SparseMatIterator_<_Tp> it(this);
+    it.seekEnd();
+    return it;
+}
 
 template<typename _Tp> inline SparseMatConstIterator_<_Tp> SparseMat::end() const
-{ SparseMatConstIterator_<_Tp> it(this); it.seekEnd(); return it; }
-    
-    
+{
+    SparseMatConstIterator_<_Tp> it(this);
+    it.seekEnd();
+    return it;
+}
+
+
 inline SparseMatConstIterator::SparseMatConstIterator()
-: m(0), hashidx(0), ptr(0)
+    : m(0), hashidx(0), ptr(0)
 {
 }
 
 inline SparseMatConstIterator::SparseMatConstIterator(const SparseMatConstIterator& it)
-: m(it.m), hashidx(it.hashidx), ptr(it.ptr)
+    : m(it.m), hashidx(it.hashidx), ptr(it.ptr)
 {
 }
 
 static inline bool operator == (const SparseMatConstIterator& it1, const SparseMatConstIterator& it2)
-{ return it1.m == it2.m && it1.hashidx == it2.hashidx && it1.ptr == it2.ptr; }
+{
+    return it1.m == it2.m && it1.hashidx == it2.hashidx && it1.ptr == it2.ptr;
+}
 
 static inline bool operator != (const SparseMatConstIterator& it1, const SparseMatConstIterator& it2)
-{ return !(it1 == it2); }
+{
+    return !(it1 == it2);
+}
 
 
 inline SparseMatConstIterator& SparseMatConstIterator::operator = (const SparseMatConstIterator& it)
 {
-    if( this != &it )
-    {
+    if( this != &it ) {
         m = it.m;
         hashidx = it.hashidx;
         ptr = it.ptr;
@@ -4373,12 +4843,14 @@ inline SparseMatConstIterator& SparseMatConstIterator::operator = (const SparseM
 }
 
 template<typename _Tp> inline const _Tp& SparseMatConstIterator::value() const
-{ return *(_Tp*)ptr; }
+{
+    return *(_Tp*)ptr;
+}
 
 inline const SparseMat::Node* SparseMatConstIterator::node() const
 {
     return ptr && m && m->hdr ?
-        (const SparseMat::Node*)(ptr - m->hdr->valueOffset) : 0;
+           (const SparseMat::Node*)(ptr - m->hdr->valueOffset) : 0;
 }
 
 inline SparseMatConstIterator SparseMatConstIterator::operator ++(int)
@@ -4388,25 +4860,24 @@ inline SparseMatConstIterator SparseMatConstIterator::operator ++(int)
     return it;
 }
 
-    
+
 inline void SparseMatConstIterator::seekEnd()
 {
-    if( m && m->hdr )
-    {
+    if( m && m->hdr ) {
         hashidx = m->hdr->hashtab.size();
         ptr = 0;
     }
 }
-    
+
 inline SparseMatIterator::SparseMatIterator()
 {}
 
 inline SparseMatIterator::SparseMatIterator(SparseMat* _m)
-: SparseMatConstIterator(_m)
+    : SparseMatConstIterator(_m)
 {}
 
 inline SparseMatIterator::SparseMatIterator(const SparseMatIterator& it)
-: SparseMatConstIterator(it)
+    : SparseMatConstIterator(it)
 {
 }
 
@@ -4417,7 +4888,9 @@ inline SparseMatIterator& SparseMatIterator::operator = (const SparseMatIterator
 }
 
 template<typename _Tp> inline _Tp& SparseMatIterator::value() const
-{ return *(_Tp*)ptr; }
+{
+    return *(_Tp*)ptr;
+}
 
 inline SparseMat::Node* SparseMatIterator::node() const
 {
@@ -4439,10 +4912,12 @@ inline SparseMatIterator SparseMatIterator::operator ++(int)
 
 
 template<typename _Tp> inline SparseMat_<_Tp>::SparseMat_()
-{ flags = MAGIC_VAL | DataType<_Tp>::type; }
+{
+    flags = MAGIC_VAL | DataType<_Tp>::type;
+}
 
 template<typename _Tp> inline SparseMat_<_Tp>::SparseMat_(int _dims, const int* _sizes)
-: SparseMat(_dims, _sizes, DataType<_Tp>::type)
+    : SparseMat(_dims, _sizes, DataType<_Tp>::type)
 {}
 
 template<typename _Tp> inline SparseMat_<_Tp>::SparseMat_(const SparseMat& m)
@@ -4482,8 +4957,7 @@ template<typename _Tp> inline SparseMat_<_Tp>::SparseMat_(const CvSparseMat* m)
 template<typename _Tp> inline SparseMat_<_Tp>&
 SparseMat_<_Tp>::operator = (const SparseMat_<_Tp>& m)
 {
-    if( this != &m )
-    {
+    if( this != &m ) {
         if( m.hdr ) CV_XADD(&m.hdr->refcount, 1);
         release();
         flags = m.flags;
@@ -4503,11 +4977,15 @@ SparseMat_<_Tp>::operator = (const SparseMat& m)
 
 template<typename _Tp> inline SparseMat_<_Tp>&
 SparseMat_<_Tp>::operator = (const Mat& m)
-{ return (*this = SparseMat(m)); }
+{
+    return (*this = SparseMat(m));
+}
 
 template<typename _Tp> inline SparseMat_<_Tp>&
 SparseMat_<_Tp>::operator = (const MatND& m)
-{ return (*this = SparseMat(m)); }
+{
+    return (*this = SparseMat(m));
+}
 
 template<typename _Tp> inline SparseMat_<_Tp>
 SparseMat_<_Tp>::clone() const
@@ -4530,57 +5008,91 @@ SparseMat_<_Tp>::operator CvSparseMat*() const
 }
 
 template<typename _Tp> inline int SparseMat_<_Tp>::type() const
-{ return DataType<_Tp>::type; }
+{
+    return DataType<_Tp>::type;
+}
 
 template<typename _Tp> inline int SparseMat_<_Tp>::depth() const
-{ return DataType<_Tp>::depth; }
+{
+    return DataType<_Tp>::depth;
+}
 
 template<typename _Tp> inline int SparseMat_<_Tp>::channels() const
-{ return DataType<_Tp>::channels; }
+{
+    return DataType<_Tp>::channels;
+}
 
 template<typename _Tp> inline _Tp&
 SparseMat_<_Tp>::ref(int i0, size_t* hashval)
-{ return SparseMat::ref<_Tp>(i0, hashval); }
+{
+    return SparseMat::ref<_Tp>(i0, hashval);
+}
 
 template<typename _Tp> inline _Tp
 SparseMat_<_Tp>::operator()(int i0, size_t* hashval) const
-{ return SparseMat::value<_Tp>(i0, hashval); }    
-    
+{
+    return SparseMat::value<_Tp>(i0, hashval);
+}
+
 template<typename _Tp> inline _Tp&
 SparseMat_<_Tp>::ref(int i0, int i1, size_t* hashval)
-{ return SparseMat::ref<_Tp>(i0, i1, hashval); }
+{
+    return SparseMat::ref<_Tp>(i0, i1, hashval);
+}
 
 template<typename _Tp> inline _Tp
 SparseMat_<_Tp>::operator()(int i0, int i1, size_t* hashval) const
-{ return SparseMat::value<_Tp>(i0, i1, hashval); }
+{
+    return SparseMat::value<_Tp>(i0, i1, hashval);
+}
 
 template<typename _Tp> inline _Tp&
 SparseMat_<_Tp>::ref(int i0, int i1, int i2, size_t* hashval)
-{ return SparseMat::ref<_Tp>(i0, i1, i2, hashval); }
+{
+    return SparseMat::ref<_Tp>(i0, i1, i2, hashval);
+}
 
 template<typename _Tp> inline _Tp
 SparseMat_<_Tp>::operator()(int i0, int i1, int i2, size_t* hashval) const
-{ return SparseMat::value<_Tp>(i0, i1, i2, hashval); }
+{
+    return SparseMat::value<_Tp>(i0, i1, i2, hashval);
+}
 
 template<typename _Tp> inline _Tp&
 SparseMat_<_Tp>::ref(const int* idx, size_t* hashval)
-{ return SparseMat::ref<_Tp>(idx, hashval); }
+{
+    return SparseMat::ref<_Tp>(idx, hashval);
+}
 
 template<typename _Tp> inline _Tp
 SparseMat_<_Tp>::operator()(const int* idx, size_t* hashval) const
-{ return SparseMat::value<_Tp>(idx, hashval); }
+{
+    return SparseMat::value<_Tp>(idx, hashval);
+}
 
 template<typename _Tp> inline SparseMatIterator_<_Tp> SparseMat_<_Tp>::begin()
-{ return SparseMatIterator_<_Tp>(this); }
+{
+    return SparseMatIterator_<_Tp>(this);
+}
 
 template<typename _Tp> inline SparseMatConstIterator_<_Tp> SparseMat_<_Tp>::begin() const
-{ return SparseMatConstIterator_<_Tp>(this); }
+{
+    return SparseMatConstIterator_<_Tp>(this);
+}
 
 template<typename _Tp> inline SparseMatIterator_<_Tp> SparseMat_<_Tp>::end()
-{ SparseMatIterator_<_Tp> it(this); it.seekEnd(); return it; }
-    
+{
+    SparseMatIterator_<_Tp> it(this);
+    it.seekEnd();
+    return it;
+}
+
 template<typename _Tp> inline SparseMatConstIterator_<_Tp> SparseMat_<_Tp>::end() const
-{ SparseMatConstIterator_<_Tp> it(this); it.seekEnd(); return it; }
+{
+    SparseMatConstIterator_<_Tp> it(this);
+    it.seekEnd();
+    return it;
+}
 
 template<typename _Tp> inline
 SparseMatConstIterator_<_Tp>::SparseMatConstIterator_()
@@ -4588,21 +5100,25 @@ SparseMatConstIterator_<_Tp>::SparseMatConstIterator_()
 
 template<typename _Tp> inline
 SparseMatConstIterator_<_Tp>::SparseMatConstIterator_(const SparseMat_<_Tp>* _m)
-: SparseMatConstIterator(_m)
+    : SparseMatConstIterator(_m)
 {}
 
 template<typename _Tp> inline
 SparseMatConstIterator_<_Tp>::SparseMatConstIterator_(const SparseMatConstIterator_<_Tp>& it)
-: SparseMatConstIterator(it)
+    : SparseMatConstIterator(it)
 {}
 
 template<typename _Tp> inline SparseMatConstIterator_<_Tp>&
 SparseMatConstIterator_<_Tp>::operator = (const SparseMatConstIterator_<_Tp>& it)
-{ return ((SparseMatConstIterator&)*this = it); }
+{
+    return ((SparseMatConstIterator&)*this = it);
+}
 
 template<typename _Tp> inline const _Tp&
 SparseMatConstIterator_<_Tp>::operator *() const
-{ return *(const _Tp*)this->ptr; }
+{
+    return *(const _Tp*)this->ptr;
+}
 
 template<typename _Tp> inline SparseMatConstIterator_<_Tp>&
 SparseMatConstIterator_<_Tp>::operator ++()
@@ -4625,21 +5141,25 @@ SparseMatIterator_<_Tp>::SparseMatIterator_()
 
 template<typename _Tp> inline
 SparseMatIterator_<_Tp>::SparseMatIterator_(SparseMat_<_Tp>* _m)
-: SparseMatConstIterator_<_Tp>(_m)
+    : SparseMatConstIterator_<_Tp>(_m)
 {}
 
 template<typename _Tp> inline
 SparseMatIterator_<_Tp>::SparseMatIterator_(const SparseMatIterator_<_Tp>& it)
-: SparseMatConstIterator_<_Tp>(it)
+    : SparseMatConstIterator_<_Tp>(it)
 {}
 
 template<typename _Tp> inline SparseMatIterator_<_Tp>&
 SparseMatIterator_<_Tp>::operator = (const SparseMatIterator_<_Tp>& it)
-{ return ((SparseMatIterator&)*this = it); }
+{
+    return ((SparseMatIterator&)*this = it);
+}
 
 template<typename _Tp> inline _Tp&
 SparseMatIterator_<_Tp>::operator *() const
-{ return *(_Tp*)this->ptr; }
+{
+    return *(_Tp*)this->ptr;
+}
 
 template<typename _Tp> inline SparseMatIterator_<_Tp>&
 SparseMatIterator_<_Tp>::operator ++()
@@ -4655,7 +5175,7 @@ SparseMatIterator_<_Tp>::operator ++(int)
     SparseMatConstIterator::operator ++();
     return it;
 }
-    
+
 }
 
 #endif

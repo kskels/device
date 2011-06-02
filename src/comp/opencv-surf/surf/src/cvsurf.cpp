@@ -678,10 +678,10 @@ int useProvidedKeyPts)
     if (!useProvidedKeyPts) {
         //CV_Assert(0);
         if ( mask ) {
-        mask1 = cvCreateMat( img->height, img->width, CV_8UC1 );
-        mask_sum = cvCreateMat( img->height+1, img->width+1, CV_32SC1 );
-        cvMinS( mask, 1, mask1 );
-        cvIntegral( mask1, mask_sum );
+            mask1 = cvCreateMat( img->height, img->width, CV_8UC1 );
+            mask_sum = cvCreateMat( img->height+1, img->width+1, CV_32SC1 );
+            cvMinS( mask, 1, mask1 );
+            cvIntegral( mask1, mask_sum );
         }
         keypoints = icvFastHessianDetector( sum, mask_sum, storage, &params );
     } else {

@@ -39,16 +39,16 @@ int main(int argc, char* argv[])
     } // !for
 
     //for (std::vector<cfw_component*>::iterator it = _components.end();
-            //it != _components.begin(); --it) {
+    //it != _components.begin(); --it) {
 
-        //cfw_destroy_component_t destroy_component = (cfw_destroy_component_t) dlsym(handle, "cfw_destroy_component");
-        //if (!destroy_component) {
-            //std::cerr << "Cannot load symbol 'destroy_component': " << dlerror() << std::endl;
-            //dlclose(handle);
-            //return 1;
-        //}
+    //cfw_destroy_component_t destroy_component = (cfw_destroy_component_t) dlsym(handle, "cfw_destroy_component");
+    //if (!destroy_component) {
+    //std::cerr << "Cannot load symbol 'destroy_component': " << dlerror() << std::endl;
+    //dlclose(handle);
+    //return 1;
+    //}
 
-        //destroy_component(component);
+    //destroy_component(component);
     //}
 
     return 0;

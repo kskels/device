@@ -33,12 +33,14 @@ private:
 };
 
 extern "C" cfw_component* cfw_create_component(cfw_portal* portal,
-        const std::string& cfg) {
+        const std::string& cfg)
+{
     std::cout << "init example component" << std::endl;
     return new example(portal, cfg);
 }
 
-extern "C" void cfw_destroy_component(cfw_component* component) {
+extern "C" void cfw_destroy_component(cfw_component* component)
+{
     std::cout << "terminate example component" << std::endl;
     delete static_cast<example*>(component);
 }
