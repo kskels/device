@@ -1,0 +1,28 @@
+
+Core
+-------------------------------------------------------------------------------
+* library manager (open and register libraries)
+* configuration handling, maybe ptrcfg
+* core forever loop that can accept tasks
+
+Util
+-------------------------------------------------------------------------------
+* log service
+* availability controller
+* think and add most important needed internal services
+
+SDK
+-------------------------------------------------------------------------------
+* class that verifies mandatory parts of a component
+* simple portal and other services mock
+* consider parts that might help out writing cfw component
+* maybe runnable super-class for active services
+* decide on used libraries (poco, boost, none?)
+
+Components Ideas
+-------------------------------------------------------------------------------
+* a message service between components 
+* enet NBI and maybe client
+* an actions that can be executed from the client
+* sqlite3 storage support, link in sqlite library?
+
