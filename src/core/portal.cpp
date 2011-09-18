@@ -24,3 +24,9 @@ void portal::register_component(cfw_component* component)
     _components.insert(std::make_pair<cfw_id,cfw_component*>(component->id(),component));
 } // !register_component
 
+
+std::map<cfw_id,cfw_component*> portal::components() const
+{
+	return _components;
+} // !components
+

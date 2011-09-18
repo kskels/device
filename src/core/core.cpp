@@ -5,51 +5,72 @@
 #include <portal.hpp>
 
 #include <iostream>
+#include <string.h>
+
 #include <dlfcn.h>
+#include <stdio.h>
+#include <sys/shm.h>
 
 
 int main(int argc, char* argv[])
 {
     std::vector<std::string> libs;
-    libs.push_back("./libpgm-reader.so");
-    libs.push_back("./libopencv-surf.so");
-    libs.push_back("./libexperiment.so");
+    libs.push_back("./libexample.so");
 
     portal _portal;
+
+
+    int shmid2;
+    key_t key2;
+    void* shm2;
+    std::string name_list;
+    key2=ftok("tmp",'d');
+    //create
+    if ((shmid2 = shmget ( key2, sizeof(char)*1000, IPC_CREAT | 0666)) < 0) {
+        perror("shmget2");
+        return 1;
+    }
+    //attach
+    shm2 = shmat(shmid2, (void *)0, 0) ;
+    portal** list = new portal*[2];
+    list[0] = &_portal;
+    list[1] = 0;
+    memcpy(shm2, list, sizeof(portal**));
+
+
     for (std::vector<std::string>::iterator it = libs.begin();
             it != libs.end(); ++it) {
 
-        void* handle = dlopen((*it).c_str(), RTLD_LAZY);
-        if (!handle) {
-            std::cerr << "Cannot open library: " << dlerror() << std::endl;
-            return 1;
-        }
+        pid_t pid = fork();
+        if (pid > 0) {
 
-        cfw_create_component_t create_component = (cfw_create_component_t) dlsym(handle, "cfw_create_component");
-        if (!create_component) {
-            std::cerr << "Cannot load symbol 'create_cfw_component': " << dlerror() << std::endl;
-            dlclose(handle);
-            return 1;
-        }
+        } else if (pid == 0) {
+            void* handle = dlopen((*it).c_str(), RTLD_LAZY);
+            if (!handle) {
+                std::cerr << "Cannot open library: " << dlerror() << std::endl;
+                return 1;
+            }
+            cfw_create_component_t create_component = (cfw_create_component_t) dlsym(handle, "cfw_create_component");
+            if (!create_component) {
+                std::cerr << "Cannot load symbol 'create_cfw_component': " << dlerror() << std::endl;
+                dlclose(handle);
+                return 1;
+            }
+            // get portal from shared memory
+            portal* p = ((portal**)shm2)[1];
+            cfw_component* component = create_component(p, "");
+            p->register_component(component);
 
-        cfw_component* component = create_component(&_portal, "");
-        _portal.register_component(component);
-        std::cout << "[info]: starting " << component->id().first << "~" << component->id().second << std::endl;
-        component->start();
+            while(1) {
+                sleep(1000);
+            }
+
+        } else {
+            // failed to fork
+        }
     } // !for
 
-    //for (std::vector<cfw_component*>::iterator it = _components.end();
-    //it != _components.begin(); --it) {
-
-    //cfw_destroy_component_t destroy_component = (cfw_destroy_component_t) dlsym(handle, "cfw_destroy_component");
-    //if (!destroy_component) {
-    //std::cerr << "Cannot load symbol 'destroy_component': " << dlerror() << std::endl;
-    //dlclose(handle);
-    //return 1;
-    //}
-
-    //destroy_component(component);
-    //}
+	_portal.components().find(std::make_pair("example","1"))->second->start();	
 
     return 0;
 } // main

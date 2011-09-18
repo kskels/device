@@ -2,13 +2,51 @@
 #include <cfw_core.hpp>
 
 #include <iostream>
+#include <list>
+#include <tr1/functional>
+
+
+namespace cfw {
+
+class log {
+public:
+	void write(const std::string& message) {
+		std::cout << message << std::endl;
+	}	
+};
+
+class write 
+{
+public:
+	write(log* l) : _log(l) {}
+	void operator()(const std::string& message) {
+		_log->write(message);
+	}	
+private:
+	log* _log;
+};
+
+}
+
+
 
 
 class example : public cfw_component
 {
 public:
     example(cfw_portal* portal, const std::string& cfg) :
-        _portal(portal), _cfg(cfg) {}
+        _portal(portal), _cfg(cfg) {
+		_methods.push_back(cfw::write(&_log));
+	
+		// "example-1.log" // logging method
+		void* method(void* args); 
+	}
+
+	
+
+
+	portal->message(cfw_log_id, "log", )
+
     ~example() {}
     cfw_id id() const {
         return std::make_pair("example", "1");
@@ -26,6 +64,11 @@ public:
         return _deps;
     }
 private:
+	typedef std::tr1::function<void(const std::string&)> method_t;
+	std::list<method_t> _methods;
+
+	cfw::log _log;
+
     std::vector<cfw_service*> _services;
     std::vector<std::pair<cfw_id,bool> > _deps;
     cfw_portal* _portal;
