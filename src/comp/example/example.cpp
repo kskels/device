@@ -1,5 +1,5 @@
 
-#include <cfw_core.hpp>
+#include <cfw/core.hpp>
 
 #include <iostream>
 #include <list>
@@ -41,11 +41,6 @@ public:
 		// "example-1.log" // logging method
 		void* method(void* args); 
 	}
-
-	
-
-
-	portal->message(cfw_log_id, "log", )
 
     ~example() {}
     cfw_id id() const {

@@ -1,6 +1,6 @@
 
-#include <cfw_core.hpp>
-#include <cfw_util.hpp>
+#include <cfw/core.hpp>
+#include <cfw/util.hpp>
 
 #include <portal.hpp>
 
@@ -15,28 +15,9 @@
 int main(int argc, char* argv[])
 {
     std::vector<std::string> libs;
-    libs.push_back("./libexample.so");
+    libs.push_back("./libcfw_log.so");
 
     portal _portal;
-
-
-    int shmid2;
-    key_t key2;
-    void* shm2;
-    std::string name_list;
-    key2=ftok("tmp",'d');
-    //create
-    if ((shmid2 = shmget ( key2, sizeof(char)*1000, IPC_CREAT | 0666)) < 0) {
-        perror("shmget2");
-        return 1;
-    }
-    //attach
-    shm2 = shmat(shmid2, (void *)0, 0) ;
-    portal** list = new portal*[2];
-    list[0] = &_portal;
-    list[1] = 0;
-    memcpy(shm2, list, sizeof(portal**));
-
 
     for (std::vector<std::string>::iterator it = libs.begin();
             it != libs.end(); ++it) {
@@ -56,14 +37,8 @@ int main(int argc, char* argv[])
                 dlclose(handle);
                 return 1;
             }
-            // get portal from shared memory
-            portal* p = ((portal**)shm2)[1];
-            cfw_component* component = create_component(p, "");
-            p->register_component(component);
-
-            while(1) {
-                sleep(1000);
-            }
+            cfw::component* component = create_component(&_portal, "");
+            _portal.register_component(component);
 
         } else {
             // failed to fork
