@@ -30,7 +30,9 @@ public:
     cfw::id cid() const {
         return std::make_pair("log", "1");
     }
-    void start() {}
+    void start() {
+        _log.write(0, 0, "Starting the log service!");
+    }
     void stop() {}
     std::vector<cfw::service*> services() const {
         return _services;
