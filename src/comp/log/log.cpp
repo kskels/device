@@ -9,10 +9,10 @@
 class log : public cfw::log {
 public:
     cfw::id sid() const {
-        return std::make_pair("log", "1");
+        return cfw::log_id; 
     }
     cfw::id cid() const {
-        return std::make_pair("log", "1");
+        return cfw::log_id;
     }
     void write(int severity, int facility, const std::string& message) {
         std::cout << message << std::endl;
@@ -28,12 +28,14 @@ public:
     }
     ~component(){};
     cfw::id cid() const {
-        return std::make_pair("log", "1");
+        return cfw::log_id;
     }
     void start() {
-        _log.write(0, 0, "Starting the log service!");
+        _log.write(0, 0, "[DEBUG] Log component starts-up..");
     }
-    void stop() {}
+    void stop() {
+        _log.write(0, 0, "[DEBUG] Log component stops-down..");
+    }
     std::vector<cfw::service*> services() const {
         return _services;
     }

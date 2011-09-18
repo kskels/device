@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     } // !for
 
 	_portal.components().find(std::make_pair("log","1"))->second->start();	
+	_portal.components().find(std::make_pair("log","1"))->second->stop();	
 
     return 0;
 } // main
