@@ -1,6 +1,5 @@
 
 include_directories(
-	/opt/gtest/gtest-1.5.0/include
 	${PROJECT_ROOT_DIR}/inc
 	${PROJECT_ROOT_DIR}/src/core
 )
