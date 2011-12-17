@@ -11,9 +11,6 @@ public:
     cfw::id sid() const {
         return cfw::log_id; 
     }
-    cfw::id cid() const {
-        return cfw::log_id;
-    }
     void write(int severity, int facility, const std::string& message) {
         std::cout << message << std::endl;
     }	
