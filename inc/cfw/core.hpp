@@ -11,7 +11,6 @@ typedef std::pair<std::string,std::string> id;
 
 struct service {
     virtual id sid() const = 0;
-    virtual id cid() const = 0;
     virtual ~service() {};
 };
 
