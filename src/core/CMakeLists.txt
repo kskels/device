@@ -10,6 +10,7 @@ add_executable(cfw
 )
 
 target_link_libraries(cfw
+    boost_program_options
 	dl
 )
 
