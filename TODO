@@ -8,7 +8,6 @@ Core
 Util
 -------------------------------------------------------------------------------
 * log service
-* availability controller
 * think and add most important needed internal services
 
 SDK
