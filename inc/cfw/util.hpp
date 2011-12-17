@@ -12,12 +12,6 @@ struct log : public service {
     virtual ~log() {};
 };
 
-const id ac_id = std::make_pair("ac", "1");
-struct ac : public service {
-    virtual void terminate() = 0;
-    virtual ~ac() {};
-};
-
 } // namespace
 
 #endif //!CFW_UTIL_HPP
