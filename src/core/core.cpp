@@ -15,46 +15,42 @@
 namespace po = boost::program_options;
 
 
-void options(int argc, char* argv[])
-{
-    po::options_description desc("Generic");
-    desc.add_options()
-        ("help,h", "display help message")
-        ("version,v", "display version information")
-    ;
-
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
-
-    if (vm.count("help")) {
-        std::cout << desc;
-        return 1;
-    }
-    if (vm.count("version")) {
-        std::cout << "0.1.1" << std::endl;
-        return 0;
-    }
-
-    po::options_description env("Environment");
-    env.add_options()
-        ("level", po::value<int>(), "")
-    ;
-
-    po::store(po::parse_environment(env, "CFW_LOGGING_"), vm);
-    po::notify(vm);
-
-    if (vm.count("level")) {
-        std::cout << "Setting logging level to " 
-            << vm["level"].as<int>() << std::endl;
-    }
-}
-
 int main(int argc, char* argv[])
 {
     // boost options parser, nice!
     try {
-        parse_options(argc, argv);
+        po::options_description desc("Generic");
+        desc.add_options()
+        ("help,h", "display help message")
+        ("version,v", "display version information")
+        ;
+
+        po::variables_map vm;
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
+
+        if (vm.count("help")) {
+            std::cout << desc;
+            return 1;
+        }
+        if (vm.count("version")) {
+            std::cout << "0.1.1" << std::endl;
+            return 0;
+        }
+
+        po::options_description env("Environment");
+        env.add_options()
+        ("level", po::value<int>(), "")
+        ;
+
+        po::store(po::parse_environment(env, "CFW_LOGGING_"), vm);
+        po::notify(vm);
+
+        if (vm.count("level")) {
+            std::cout << "Setting logging level to "
+                      << vm["level"].as<int>() << std::endl;
+        }
+
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
