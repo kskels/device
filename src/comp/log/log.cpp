@@ -28,10 +28,10 @@ public:
         return cfw::log_id;
     }
     void start() {
-        _log.write(0, 0, "[DEBUG] Log component starts-up..");
+        _log.write(0, 0, "Log component starts-up..");
     }
     void stop() {
-        _log.write(0, 0, "[DEBUG] Log component stops-down..");
+        _log.write(0, 0, "Log component stops-down..");
     }
     std::vector<cfw::service*> services() const {
         return _services;

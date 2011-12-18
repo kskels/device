@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
     }
 
     std::vector<std::string> libs;
-    libs.push_back("./libcfw_log.so");
+    libs.push_back("../bin/libcfw_log.so");
+    libs.push_back("../bin/libcfw_example.so");
 
     portal _portal;
 
@@ -80,6 +81,8 @@ int main(int argc, char* argv[])
     } // !for
 
     _portal.components().find(std::make_pair("log","1"))->second->start();
+    _portal.components().find(std::make_pair("example","1"))->second->start();
+    _portal.components().find(std::make_pair("example","1"))->second->stop();
     _portal.components().find(std::make_pair("log","1"))->second->stop();
 
     return 0;
