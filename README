@@ -3,5 +3,5 @@ The peoject aims to create something like this
 http://en.wikipedia.org/wiki/Service-oriented_architecture
 
 It has nice C++ interfaces and the whole thing runs into
-the same process
+the same process sharing the same memory
 
